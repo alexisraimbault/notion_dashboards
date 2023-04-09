@@ -8,8 +8,8 @@ const Home = () => {
   const session = useSession()
   const supabase = useSupabaseClient()
   const user = useUser()
-  const router = useRouter()
-  const { code } = router.query;
+  const {query, push} = useRouter()
+  const { code } = query;
 
   useEffect(() => {
     if(code && code !== null && code !== undefined && code.length > 0) {
@@ -18,32 +18,29 @@ const Home = () => {
   }, [code])
   
   const getNotionAccessToken = async (notionCode) => {
-    console.log({notionCode})
-    console.log('V1')
-    const notionIntegrationClientId = "e1ec6c09-bbde-449f-a5e1-d9e8a4aa582d"
-    const notionIntegrationClientSecret = "secret_mILEebhBUG7gUshPxnNRIPZN2ZAiO5vet9yPDdxCmGL"
+    const res = await fetch('http://localhost:3000/api/auth/notion', {
+      method: 'post',
+      body: JSON.stringify({code: notionCode})
+    })
 
-    try {
-      const res = await fetch('https://api.notion.com/v1/oauth/token', {
-        method: 'post',
-        // mode: 'no-cors',
-        headers: new Headers({
-          'Authorization': `Basic ${btoa(`${notionIntegrationClientId}:${notionIntegrationClientSecret}`)}`,
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
-        }),
-        body: JSON.stringify({
-          grant_type: "authorization_code",
-          code: notionCode, 
-          redirect_uri: "http://localhost:3000/auth/notioncallback"
+    console.log({res})
+    const response = await res.json()
+    console.log({response})
+
+    const notionAccessToken = response?.access_token
+
+    if(notionAccessToken !== null && notionAccessToken?.length > 0) {
+      const { error } = await supabase
+        .from('dashboards')
+        .insert({
+          id_user: user.id, 
+          notion_token: notionAccessToken,
+          notion_data: response,
         })
-      })
-  
-      console.log({res})
-      // const response = await res.json()
-      // console.log({response})
-    } catch(e) {
-      console.log(e)
+      
+      console.log({error})
+
+      push('http://localhost:3000/')
     }
   }
 
@@ -51,7 +48,7 @@ const Home = () => {
 
   return (
     <div className="container" style={{ padding: '50px 0 100px 0' }}>
-      
+      TODO LOADER
     </div>
   )
 }

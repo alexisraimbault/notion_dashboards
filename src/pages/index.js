@@ -9,7 +9,7 @@ const Home = () => {
   const user = useUser()
 
   const [loading, setLoading] = useState(true)
-  const [notionToken, setNotionToken] = useState(null)
+  const [notionIntegrations, setNotionIntegrations] = useState([])
 
   useEffect(() => {
     if(user !== null && user.id !== null && user.id.length > 0) {
@@ -22,17 +22,16 @@ const Home = () => {
       setLoading(true)
 
       let { data, error, status } = await supabase
-        .from('profiles')
-        .select(`notion_token`)
-        .eq('id', user.id)
-        .single()
+        .from('dashboards')
+        .select('id, notion_token, notion_data, created_at')
+        .eq('id_user', user.id)
 
       if (error && status !== 406) {
         throw error
       }
 
       if (data) {
-        setNotionToken(data.notion_token)
+        setNotionIntegrations(data)
       }
 
     } catch (error) {
@@ -46,11 +45,11 @@ const Home = () => {
   console.log({user})
 
   const renderNotionInfos = () => {
-    if(notionToken === null) {
-      return <a href="https://api.notion.com/v1/oauth/authorize?owner=user&client_id=e1ec6c09-bbde-449f-a5e1-d9e8a4aa582d&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fnotioncallback&response_type=code">{`Link your notion account`}</a>
-    }
-
-    return <p>{`notion token : ${notionToken}`}</p>
+    return notionIntegrations.map(notionIntegration => (
+      <div key={`int-${notionIntegration.id}`}>
+        {notionIntegration.notion_token}
+      </div>
+    ))
   }
 
   return (
@@ -63,9 +62,10 @@ const Home = () => {
           providers={[]}
         />
       ) : (
-        <>
+        <div>
           {renderNotionInfos()}
-        </>
+          <a href="https://api.notion.com/v1/oauth/authorize?owner=user&client_id=e1ec6c09-bbde-449f-a5e1-d9e8a4aa582d&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fnotioncallback&response_type=code">{`Add a notion integration`}</a>
+        </div>
       )}
     </div>
   )
