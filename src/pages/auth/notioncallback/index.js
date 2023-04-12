@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { useSession, useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import React, {useState, useEffect} from 'react'
 
-const Home = () => {
+const NotionCallback = () => {
   const session = useSession()
   const supabase = useSupabaseClient()
   const user = useUser()
@@ -31,7 +31,7 @@ const Home = () => {
 
     if(notionAccessToken !== null && notionAccessToken?.length > 0) {
       const { error } = await supabase
-        .from('dashboards')
+        .from('NOTION_INTEGRATIONS')
         .insert({
           id_user: user.id, 
           notion_token: notionAccessToken,
@@ -53,4 +53,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default NotionCallback
