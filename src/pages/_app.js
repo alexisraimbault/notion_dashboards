@@ -5,14 +5,15 @@ import { useEffect, useState } from 'react'
 import * as dayjs from 'dayjs'
 
 function MyApp({ Component, pageProps }) {
-  const [supabase] = useState(() => createBrowserSupabaseClient())
+
+  const [supabaseClient] = useState(() => createBrowserSupabaseClient())
 
   useEffect(() => {
     dayjs().format()
   })
 
   return (
-    <SessionContextProvider supabaseClient={supabase} initialSession={pageProps.initialSession}>
+    <SessionContextProvider supabaseClient={supabaseClient} initialSession={pageProps.initialSession}>
       <Component {...pageProps} />
     </SessionContextProvider>
   )
