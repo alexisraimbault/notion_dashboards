@@ -65,7 +65,7 @@ const Home = () => {
         <div>
           {/* {renderNotionInfos()} */}
           {notionIntegrations?.length === undefined || notionIntegrations?.length === null || notionIntegrations?.length <= 0 && 
-            <a href="https://api.notion.com/v1/oauth/authorize?owner=user&client_id=e1ec6c09-bbde-449f-a5e1-d9e8a4aa582d&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fnotioncallback&response_type=code">{`Add a notion integration`}</a>
+            <a href={`https://api.notion.com/v1/oauth/authorize?owner=user&client_id=e1ec6c09-bbde-449f-a5e1-d9e8a4aa582d&redirect_uri=${process.env.NEXT_PUBLIC_NOTION_REDIRECT}&response_type=code`}>{`Add a notion integration`}</a>
           }
           {notionIntegrations?.length !== undefined && notionIntegrations?.length !== null && notionIntegrations?.length > 0 && 
             <NotionDatabases />
