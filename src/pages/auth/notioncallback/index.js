@@ -12,12 +12,12 @@ const NotionCallback = () => {
   const { code } = query;
 
   useEffect(() => {
-    if(code && code !== null && code !== undefined && code.length > 0) {
-      getNotionAccessToken(code)
+    if(code && code !== null && code !== undefined && code.length > 0 && user && user !== null && user !== undefined) {
+      getNotionAccessToken(code, user)
     }
-  }, [code])
+  }, [code, user])
   
-  const getNotionAccessToken = async (notionCode) => {
+  const getNotionAccessToken = async (notionCode, supabaseUser) => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/notion`, {
       method: 'post',
       body: JSON.stringify({code: notionCode})
@@ -32,7 +32,7 @@ const NotionCallback = () => {
       const { error } = await supabase
         .from('NOTION_INTEGRATIONS')
         .insert({
-          id_user: user.id, 
+          id_user: supabaseUser.id, 
           notion_token: notionAccessToken,
           notion_data: response,
         })
