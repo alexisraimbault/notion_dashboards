@@ -1,6 +1,8 @@
 export default async function handler(req, res) {
     const body = JSON.parse(req.body)
+    console.log({body})
     const notionCode = body.code
+    console.log({notionCode})
 
     const notionIntegrationClientId = "e1ec6c09-bbde-449f-a5e1-d9e8a4aa582d"
     const notionIntegrationClientSecret = "secret_mILEebhBUG7gUshPxnNRIPZN2ZAiO5vet9yPDdxCmGL"
