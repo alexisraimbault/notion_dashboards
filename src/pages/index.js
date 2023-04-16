@@ -44,8 +44,6 @@ const Home = () => {
     }
   }
 
-  console.log({user})
-
   const renderNotionInfos = () => {
     return notionIntegrations.map(notionIntegration => (
       <div key={`int-${notionIntegration.id}`}>
@@ -65,9 +63,13 @@ const Home = () => {
         />
       ) : (
         <div>
-          {renderNotionInfos()}
-          <a href="https://api.notion.com/v1/oauth/authorize?owner=user&client_id=e1ec6c09-bbde-449f-a5e1-d9e8a4aa582d&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fnotioncallback&response_type=code">{`Add a notion integration`}</a>
-          <NotionDatabases />
+          {/* {renderNotionInfos()} */}
+          {notionIntegrations?.length === undefined || notionIntegrations?.length === null || notionIntegrations?.length <= 0 && 
+            <a href="https://api.notion.com/v1/oauth/authorize?owner=user&client_id=e1ec6c09-bbde-449f-a5e1-d9e8a4aa582d&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fauth%2Fnotioncallback&response_type=code">{`Add a notion integration`}</a>
+          }
+          {notionIntegrations?.length !== undefined && notionIntegrations?.length !== null & notionIntegrations?.length > 0 && 
+            <NotionDatabases />
+          }
         </div>
       )}
     </div>

@@ -18,7 +18,6 @@ const NotionDatabases = () => {
     }
   }, [session, queryText])
 
-  
   const getNotionDbs = async () => {
     let { data, error, status } = await supabase
       .from('NOTION_INTEGRATIONS')
@@ -31,21 +30,19 @@ const NotionDatabases = () => {
 
     const notion_token = data[0].notion_token
       
-    const res = await fetch('http://localhost:3000/api/notion/dashboardList', {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/notion/dashboardList`, {
       method: 'post',
       body: JSON.stringify({notionApiKey: notion_token, queryText})
     })
 
-    console.log({res})
     const response = await res.json()
-    console.log({response})
     setNotionDatabases(response?.results || [])
   }
 
   const onType = e => setQueryText(e.target.value)
 
   const onDatabaseClick = databaseId => () => {
-    push(`http://localhost:3000/notion/dashboard/${databaseId}`)
+    push(`${process.env.NEXT_PUBLIC_BASE_URL}/notion/dashboard/${databaseId}`)
   }
 
   return (

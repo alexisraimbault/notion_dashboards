@@ -18,12 +18,11 @@ const NotionCallback = () => {
   }, [code])
   
   const getNotionAccessToken = async (notionCode) => {
-    const res = await fetch('http://localhost:3000/api/auth/notion', {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/auth/notion`, {
       method: 'post',
       body: JSON.stringify({code: notionCode})
     })
 
-    console.log({res})
     const response = await res.json()
     console.log({response})
 
@@ -40,7 +39,7 @@ const NotionCallback = () => {
       
       console.log({error})
 
-      push('http://localhost:3000/')
+      push(`${process.env.NEXT_PUBLIC_BASE_URL}/`)
     }
   }
 
