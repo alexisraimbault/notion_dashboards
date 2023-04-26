@@ -5,6 +5,7 @@ import { useSession, useSupabaseClient, useUser } from '@supabase/auth-helpers-r
 import React, {useState, useEffect} from 'react'
 
 import NotionNbDbEntriesGraph from '@/components/NotionNbDbEntriesGraph'
+import Editor from '@/components/Editor'
 
 const DashboardPage = () => {
   const session = useSession()
@@ -15,7 +16,10 @@ const DashboardPage = () => {
 
   return (
     <div className="container" style={{ padding: '50px 0 100px 0' }}>
-      <NotionNbDbEntriesGraph
+      {/* <NotionNbDbEntriesGraph
+        databaseId={databaseId}
+      /> */}
+      <Editor
         databaseId={databaseId}
       />
     </div>

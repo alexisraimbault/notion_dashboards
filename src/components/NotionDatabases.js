@@ -36,6 +36,17 @@ const NotionDatabases = () => {
     })
 
     const response = await res.json()
+    console.log({response})
+
+    if(response?.status === 401 && response?.message === "API token is invalid.") {
+      console.log('DELETING ...')
+      const { error } = await supabase
+      .from('NOTION_INTEGRATIONS')
+      .delete()
+      .eq('id_user', user.id)
+      console.log({error})
+    }
+  
     setNotionDatabases(response?.results || [])
   }
 
