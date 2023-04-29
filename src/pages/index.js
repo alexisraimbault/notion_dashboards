@@ -13,7 +13,7 @@ const Home = () => {
   const supabase = useSupabaseClient()
   const user = useUser()
 
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [notionIntegrations, setNotionIntegrations] = useState([])
 
   const onLinkNotionAccount = () => {
@@ -46,6 +46,7 @@ const Home = () => {
     } catch (error) {
       alert('Error loading user data!')
       console.log(error)
+      setLoading(false)
     } finally {
       setLoading(false)
     }
