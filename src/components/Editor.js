@@ -6,14 +6,27 @@ import React, {useState, useEffect} from 'react'
 import { LineChart, Line, Tooltip, XAxis, YAxis, ResponsiveContainer, BarChart, Bar, PieChart, Pie } from 'recharts';
 import * as dayjs from 'dayjs'
 import { Dropdown } from 'primereact/dropdown';
+import { Button } from 'primereact/button';
+import { InputText } from 'primereact/inputtext';
+import { ProgressSpinner } from 'primereact/progressspinner';
 
-const Editor = ({databaseId}) => {
+const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
   const session = useSession()
   const supabase = useSupabaseClient()
   const user = useUser()
   const {push} = useRouter()
+
+  const onNavigateToDashboard = () => {
+    push(`${process.env.NEXT_PUBLIC_BASE_URL}`)
+  }
+
   const [notionDatabaseInfo, setNotionDatabaseInfo] = useState(null)
   const [notionDatabaseItems, setNotionDatabaseItems] = useState([])
+  const [isSaveLoading, setIsSaveLoading] = useState(false)
+  const [dashboardId, setDashboardId] = useState(initialDashboardId !== undefined && initialDashboardId !== null ? parseInt(initialDashboardId) : null)
+  const [isInitialLoaded, setIsInitialLoaded] = useState(false)
+  const [dashboardName, setDashboardName] = useState('')
+
   const [graphSettings, setGraphSettings] = useState({
     XAxisId: null,
     YAxisId: null,
@@ -36,6 +49,90 @@ const Editor = ({databaseId}) => {
     {name: 'Doughnut chart', id: 'dough'},
     // TODO add other options
   ]
+
+  const onEditDashboardName = e => setDashboardName(e.target.value)
+  
+  const usedDashboardId = (initialDashboardId !== null && initialDashboardId !== undefined) ? parseInt(initialDashboardId) : dashboardId
+  
+  const onCopyEmbedLink = () => {
+    const textArea = document.createElement("textarea");
+  
+    // Place in the top-left corner of screen regardless of scroll position.
+    textArea.style.position = 'fixed';
+    textArea.style.top = 0;
+    textArea.style.left = 0;
+  
+    // Ensure it has a small width and height. Setting to 1px / 1em
+    // doesn't work as this gives a negative w/h on some browsers.
+    textArea.style.width = '2em';
+    textArea.style.height = '2em';
+  
+    // We don't need padding, reducing the size if it does flash render.
+    textArea.style.padding = 0;
+  
+    // Clean up any borders.
+    textArea.style.border = 'none';
+    textArea.style.outline = 'none';
+    textArea.style.boxShadow = 'none';
+  
+    // Avoid flash of the white box if rendered for any reason.
+    textArea.style.background = 'transparent';
+  
+  
+    textArea.value = `${process.env.NEXT_PUBLIC_BASE_URL}/notion/embed/${usedDashboardId}`;
+  
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+  
+    try {
+      var successful = document.execCommand('copy');
+      var msg = successful ? 'successful' : 'unsuccessful';
+      console.log('Copying text command was ' + msg);
+    } catch (err) {
+      console.log('Oops, unable to copy');
+    }
+  
+    document.body.removeChild(textArea);
+  }
+
+  const onSave = async () => {
+    setIsSaveLoading(true)
+    if(usedDashboardId === null || usedDashboardId === undefined) {
+      const dashboardObject = {
+        id_user: user.id, 
+        notion_database_id: databaseId,
+        dashboard_settings: graphSettings,
+        name: dashboardName
+      }
+
+      const { data, error } = await supabase
+        .from('DASHBOARD')
+        .insert(dashboardObject)
+        .select()
+
+      const dashboardId = data[0]?.id
+      setDashboardId(dashboardId)
+    } else {
+      const dashboardObject = {
+        dashboard_settings: graphSettings,
+        name: dashboardName
+      }
+
+      const { data: dataTest } = await supabase
+        .from('DASHBOARD')
+        .select()
+        .eq('id', usedDashboardId)
+
+      const { data, error } = await supabase
+        .from('DASHBOARD')
+        .update(dashboardObject)
+        .eq('id', usedDashboardId)
+        .select()
+    }
+
+    setIsSaveLoading(false)
+  }
 
   const updateChartType = e => {
     const newGraphSettings = {...graphSettings}
@@ -224,10 +321,64 @@ const Editor = ({databaseId}) => {
   }
 
   useEffect(() => {
-    if(user !== null && user.id !== null && user.id.length > 0 && databaseId !== null && databaseId !== undefined) {
+    if(!isInitialLoaded && user !== null && user.id !== null && user.id.length > 0 && databaseId !== null && databaseId !== undefined) {
       getNotionDbData()
     }
-  }, [session, databaseId])
+    if(!isInitialLoaded && isEmbed && initialDashboardId !== null && initialDashboardId !== undefined) {
+      initDashboardData()
+    }
+    if(!isInitialLoaded && !isEmbed && user !== null && user.id !== null && user.id.length > 0 && initialDashboardId !== null && initialDashboardId !== undefined) {
+      initDashboardData()
+    }
+  }, [session, databaseId, initialDashboardId])
+
+  const initDashboardData = async () => {
+    let { data:data1, error1, status1 } = await supabase
+    .from('DASHBOARD')
+    .select('id, id_user, notion_database_id, dashboard_settings, name')
+    .eq('id', initialDashboardId)
+    
+    if(data1.length <= 0) {
+      return
+    }
+    
+    const dasbhoardData = data1[0]
+    const notionDatabaseId = dasbhoardData.notion_database_id
+    const dashboardGraphSettings = dasbhoardData.dashboard_settings
+    const dashboardInitialName = dasbhoardData.name
+
+    let { data:data2, error2, status2 } = await supabase
+      .from('NOTION_INTEGRATIONS')
+      .select('id, notion_token, notion_data, created_at')
+      .eq('id_user', dasbhoardData.id_user)
+    
+    if(data2.length <= 0) {
+      return
+    }
+
+    const notion_token = data2[0].notion_token
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/notion/database`, {
+      method: 'post',
+      body: JSON.stringify({notionApiKey: notion_token, databaseId: notionDatabaseId})
+    })
+
+    const response = await res.json()
+    setNotionDatabaseInfo(response)
+
+
+    const res2 = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/notion/dashboardInfo`, {
+      method: 'post',
+      body: JSON.stringify({notionApiKey: notion_token, databaseId: notionDatabaseId})
+    })
+
+    const response2 = await res2.json()
+    setNotionDatabaseItems(response2?.results || [])
+
+    setGraphSettings(dashboardGraphSettings)
+    setDashboardName(dashboardInitialName)
+    setIsInitialLoaded(true)
+  }
   
   const getNotionDbData = async () => {
     let { data, error, status } = await supabase
@@ -247,9 +398,11 @@ const Editor = ({databaseId}) => {
     })
 
     const response = await res.json()
-    console.log({response})
     setNotionDatabaseInfo(response)
 
+    if(dashboardName?.length === 0) {
+      setDashboardName(response?.title[0]?.text?.content)
+    }
 
     const res2 = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/notion/dashboardInfo`, {
       method: 'post',
@@ -257,8 +410,8 @@ const Editor = ({databaseId}) => {
     })
 
     const response2 = await res2.json()
-    console.log({response2})
     setNotionDatabaseItems(response2?.results || [])
+    setIsInitialLoaded(true)
   }
 
   const getPropertiesArray = () => {
@@ -388,7 +541,7 @@ const Editor = ({databaseId}) => {
 
   const renderCharts = () => {
     if(graphData === null || graphData === undefined || graphData.length === 0) {
-      return <div>No data to display</div>
+      return <div className='charts-wrapper'>No data to display</div>
     }
 
     const renderChartFunctionMap = {
@@ -397,25 +550,67 @@ const Editor = ({databaseId}) => {
       dough: renderDoughnutChart,
     }
 
-    return renderChartFunctionMap[graphSettings?.chartType]()
+    return (
+      <div className='charts-wrapper'>
+        {renderChartFunctionMap[graphSettings?.chartType]()}
+      </div>
+    )
   }
 
   return (
-    <div>
-      {notionDatabaseInfo?.properties !== null && notionDatabaseInfo?.properties !== undefined && (
-        <div>
-          <div>Chart type :</div>
-          <Dropdown value={graphSettings?.chartType} onChange={updateChartType} options={chartOptions} optionLabel="name" optionValue="id" placeholder="Select a Property" />
-          <div>X Axis :</div>
-          <Dropdown value={graphSettings?.XAxisId} onChange={updateXAxis} options={porpertiesOptions} optionLabel="name" optionValue="id" placeholder="Select a Property" />
-          <div>Y Axis :</div>
-          <Dropdown value={graphSettings?.YAxisId} onChange={updateYAxis} options={porpertiesOptions} optionLabel="name" optionValue="id" placeholder="Select a Property" />
-          <div>Y Axis aggregation :</div>
-          <Dropdown value={graphSettings?.YAxisAggregationId} onChange={updateYAxisAggregation} options={YAxisAggregationOptions} optionLabel="name" optionValue="id" placeholder="Select an Aggregation" />
+    <div className='editor-wrapper'>
+      {(notionDatabaseInfo?.properties !== null && notionDatabaseInfo?.properties !== undefined) ? (
+        <div className='editor-inner-container'>
+          {!isEmbed && (
+            <div className='editor-options-container'>
+              <div 
+                className='go-back-container'
+                onClick={onNavigateToDashboard}
+              >
+                {'< Back to dashboard'}
+              </div>
+              <div className='editor-option-container'>
+                <div className='editor-option-title'>Chart type :</div>
+                <Dropdown value={graphSettings?.chartType} onChange={updateChartType} options={chartOptions} optionLabel="name" optionValue="id" placeholder="Select a Property" />
+              </div>
+              <div className='editor-option-container'>
+                <div className='editor-option-title'>X Axis :</div>
+                <Dropdown value={graphSettings?.XAxisId} onChange={updateXAxis} options={porpertiesOptions} optionLabel="name" optionValue="id" placeholder="Select a Property" />
+              </div>
+              <div className='editor-option-container'>
+                <div className='editor-option-title'>Y Axis :</div>
+                <Dropdown value={graphSettings?.YAxisId} onChange={updateYAxis} options={porpertiesOptions} optionLabel="name" optionValue="id" placeholder="Select a Property" />
+              </div>
+              <div className='editor-option-container'>
+                <div className='editor-option-title'>Y Axis aggregation :</div>
+                <Dropdown value={graphSettings?.YAxisAggregationId} onChange={updateYAxisAggregation} options={YAxisAggregationOptions} optionLabel="name" optionValue="id" placeholder="Select an Aggregation" />
+              </div>
+              <div className='editor-option-container'>
+                <div className='editor-option-title'>Graph title</div>
+                <InputText 
+                  value={dashboardName} 
+                  onChange={onEditDashboardName}
+                  placeholder="My Graph"
+                />
+              </div>
+              {/* <div className='editor-option-container'>
+                <div className='editor-option-title'>[WIP] data filters</div>
+              </div> */}
+              <div className='editor-option-container'>
+                <Button label="Save" loading={isSaveLoading} onClick={onSave} />
+              </div>
+              {(usedDashboardId !== null && usedDashboardId !== undefined) && (
+                <div className='editor-option-container'>
+                  <Button label="Copy Embed Link" onClick={onCopyEmbedLink} />
+                  {/* TODO popup, be able to make link not avaibable for privacy */}
+                  <div className='subtitle'>Paste this Link into Notion and choose the "Create Embed" option</div>
+                </div>
+              )}
+            </div>
+          )}
+          {renderCharts()}
         </div>
-        // TODO : data filters
-      )}
-      {renderCharts()}
+      ) : <ProgressSpinner />}
     </div>
   )
 }

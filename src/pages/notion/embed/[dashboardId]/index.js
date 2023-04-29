@@ -7,12 +7,12 @@ import React, {useState, useEffect} from 'react'
 import NotionNbDbEntriesGraph from '@/components/NotionNbDbEntriesGraph'
 import Editor from '@/components/Editor'
 
-const DashboardPage = () => {
+const DashboardEmbedPage = () => {
   const session = useSession()
   const supabase = useSupabaseClient()
   const user = useUser()
   const {query, push} = useRouter()
-  const {databaseId} = query
+  const {dashboardId} = query
 
   return (
     <div>
@@ -20,10 +20,11 @@ const DashboardPage = () => {
         databaseId={databaseId}
       /> */}
       <Editor
-        databaseId={databaseId}
+        initialDashboardId={dashboardId}
+        isEmbed
       />
     </div>
   )
 }
 
-export default DashboardPage
+export default DashboardEmbedPage
