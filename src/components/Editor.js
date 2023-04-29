@@ -603,7 +603,7 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
                 <div className='editor-option-container'>
                   <Button label="Copy Embed Link" onClick={onCopyEmbedLink} />
                   {/* TODO popup, be able to make link not avaibable for privacy */}
-                  <div className='subtitle'>Paste this Link into Notion and choose the "Create Embed" option</div>
+                  <div className="subtitle">{'Paste this Link into Notion and choose the "Create Embed" option'}</div>
                 </div>
               )}
             </div>
