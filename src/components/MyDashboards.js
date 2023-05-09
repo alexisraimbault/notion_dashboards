@@ -32,7 +32,6 @@ const MyDashboards = () => {
 
   const onDashboardClick = dashboardId => () => {
     push(`${process.env.NEXT_PUBLIC_BASE_URL}/notion/dashboardupdate/${dashboardId}`)
-  }
 
   return (
     <div className="graph-listing-wrapper">

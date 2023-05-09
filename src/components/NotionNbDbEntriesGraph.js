@@ -330,13 +330,14 @@ const NotionNbDbEntriesGraph = ({databaseId}) => {
     let { data, error, status } = await supabase
       .from('NOTION_INTEGRATIONS')
       .select('id, notion_token, notion_data, created_at')
+      .order('id', { ascending: true })
       .eq('id_user', user.id)
     
     if(data.length <= 0) {
       return
     }
 
-    const notion_token = data[0].notion_token
+    const notion_token = data[data.length - 1].notion_token
       
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/notion/dashboardInfo`, {
       method: 'post',

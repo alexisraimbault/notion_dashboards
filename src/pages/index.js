@@ -33,6 +33,7 @@ const Home = () => {
       let { data, error, status } = await supabase
         .from('NOTION_INTEGRATIONS')
         .select('id, notion_token, notion_data, created_at')
+        .order('id', { ascending: true })
         .eq('id_user', user.id)
 
       if (error && status !== 406) {

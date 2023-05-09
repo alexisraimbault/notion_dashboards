@@ -185,7 +185,9 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
     const data = item.date
 
     // TODO
-    return 0
+    return data.start
+    // TODO group by wook / month / year input
+    // TODO add dates without data with a '0' value checkbox
   }
   // - email
   const notionGetemail = item => {
@@ -305,11 +307,13 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
   }
 
   const getNotionParamValue = item => {
+    console.log({item})
     const typeFormatMap = {
       number: notionGetnumber,
       rich_text: notionGetrich_text,
       select: notionGetselect,
       title: notionGettitle,
+      date: notionGetdate,
     }
   
     const itemType = item.type 
@@ -350,13 +354,14 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
     let { data:data2, error2, status2 } = await supabase
       .from('NOTION_INTEGRATIONS')
       .select('id, notion_token, notion_data, created_at')
+      .order('id', { ascending: true })
       .eq('id_user', dasbhoardData.id_user)
     
     if(data2.length <= 0) {
       return
     }
 
-    const notion_token = data2[0].notion_token
+    const notion_token = data2[data2.length - 1].notion_token
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/notion/database`, {
       method: 'post',
@@ -384,13 +389,14 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
     let { data, error, status } = await supabase
       .from('NOTION_INTEGRATIONS')
       .select('id, notion_token, notion_data, created_at')
+      .order('id', { ascending: true })
       .eq('id_user', user.id)
     
     if(data.length <= 0) {
       return
     }
 
-    const notion_token = data[0].notion_token
+    const notion_token = data[data.length - 1].notion_token
       
     const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/notion/database`, {
       method: 'post',
