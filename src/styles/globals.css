@@ -25,8 +25,12 @@ body {
 
 * {
   color: var(--custom-color) !important;
-  font-family: var(--custom-font-family);
+  font-family: var(--custom-font-family) !important;
   box-sizing: border-box;
+}
+
+.pi {
+  font-family: 'primeicons' !important;
 }
 
 html,
@@ -264,6 +268,7 @@ body,
   margin-bottom: 40px;
 }
 
+
 .graph-listing-cards-container {
   display: flex;
   flex-wrap: wrap;
@@ -277,6 +282,164 @@ body,
   border-radius: var(--custom-border-radius);
   cursor: pointer;
   width: 180px;
+}
+
+.homepage__empty-state-container {
+  padding: 28px;
+  background-color: white;
+  border: var(--custom-border-thic);
+  border-radius: var(--custom-border-radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.homepage__empty-state-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--custom-color-secondary);
+  margin-bottom: 20px;
+}
+
+.homepage__empty-state-btn {
+  font-size: 24px;
+  font-weight: bold;
+  color: white !important;
+  cursor: pointer;
+  padding: 12px 24px;
+  border-radius: var(--custom-border-radius);
+  background-color: var(--custom-color-brand);
+}
+
+.graph-listing__empty-state-container {
+  padding: 28px;
+  background-color: white;
+  border: var(--custom-border-thic);
+  border-radius: var(--custom-border-radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.graph-listing__empty-state-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--custom-color-secondary);
+  margin-bottom: 20px;
+}
+
+.graph-listing__empty-state-btn {
+  font-size: 24px;
+  font-weight: bold;
+  color: white !important;
+  cursor: pointer;
+  padding: 12px 24px;
+  border-radius: var(--custom-border-radius);
+  background-color: var(--custom-color-brand);
+}
+
+.homepage__account-container {
+  padding: 28px;
+  background-color: white;
+  border: var(--custom-border-thic);
+  border-radius: var(--custom-border-radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.homepage__account-integration-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--custom-color-secondary);
+  margin-bottom: 24px;
+}
+
+.homepage__account-integration-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.homepage__account-integration-logo {
+  border-radius: var(--custom-border-radius);
+}
+
+.homepage__account-integration-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--custom-color-secondary);
+  margin-left: 12px;
+}
+
+.homepage__account-integration-btn {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--custom-color-secondary) !important;
+  cursor: pointer;
+  padding: 12px 24px;
+  border-radius: var(--custom-border-radius);
+  border: var(--custom-border-thic);
+}
+
+.homepage__account-integration-btn:hover {
+  border-color: var(--custom-color-brand-light);
+}
+
+.landing__wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100vw;
+  padding: 100px 20%;
+}
+
+.landing__title {
+  margin: 0;
+  text-align: center;
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--custom-color-secondary);
+  margin-bottom: 60px;
+}
+
+.landing__auth-wrapper {
+  min-width: 60%;
+  padding: 28px 40px;
+  background-color: white;
+  border: var(--custom-border-thic);
+  border-radius: var(--custom-border-radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.supabase-auth-ui_ui-input {
+  border-radius: var(--custom-border-radius);
+  /* border: var(--custom-border-width-thic) solid var(--custom-color-brand-light) !important; */
+  border: var(--custom-border-thic) !important;
+}
+
+.supabase-auth-ui_ui-anchor {
+  color: var(--custom-color-secondary);
+}
+
+.supabase-auth-ui_ui-button {
+  font-size: 18px !important;
+  font-weight: bold !important;
+  color: white !important;
+  cursor: pointer !important;
+  padding: 12px 24px !important;
+  border-radius: var(--custom-border-radius) !important;
+  background-color: var(--custom-color-brand) !important;
+}
+
+.t-PJLV {
+  width: 100%;
+}
+
+.landing__logo-container {
+  margin-top: 40px;
 }
 
 .graph-listing-card__title {

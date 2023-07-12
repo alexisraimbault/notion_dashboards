@@ -5,6 +5,7 @@ import React, {useState, useEffect} from 'react'
 import { Button } from 'primereact/button';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { Dialog } from 'primereact/dialog';
+import Image from 'next/image'
 
 import NotionDatabases from '@/components/NotionDatabases'
 import MyDashboards from '@/components/MyDashboards'
@@ -24,20 +25,35 @@ const Home = () => {
     supabase.auth.signOut();
   }
 
+  const hasIntegrations = notionIntegrations?.length !== undefined && notionIntegrations?.length !== null && notionIntegrations?.length > 0
+  const currentIntegration = hasIntegrations ? 
+    notionIntegrations[notionIntegrations.length - 1] : null
+
   const onCreateGraph = () => setDisplayModal(true)
 
   const tabRenderer = {
-    graphs: () => <MyDashboards />,
-    account: () => (
-      <>
-        <Button label="Change Notion Integration" onClick={onLinkNotionAccount} />
-      </>
-    ),
-    create: () => (
-      <>
-        <NotionDatabases/>
-      </>
-    )
+    graphs: () => <MyDashboards createGraphFunction={onCreateGraph} />,
+    account: () => hasIntegrations ? (
+      <div className='homepage__account-container'>
+        <div className='homepage__account-integration-title'>{'Current linked Notion Workspace'}</div>
+        <div className='homepage__account-integration-container'>
+          <img 
+            className='homepage__account-integration-logo'
+            src={currentIntegration?.notion_data?.workspace_icon} 
+            alt="Integration logo" 
+            width="52" 
+            height="52" 
+          />
+          <div className='homepage__account-integration-name'>{currentIntegration?.notion_data?.workspace_name}</div>
+        </div>
+        <div 
+          className="homepage__account-integration-btn"
+          onClick={onLinkNotionAccount}
+        >
+          {"Update Notion Workspace"}
+        </div>
+      </div>
+    ) : null,
   }
 
   const onLinkNotionAccount = () => {
@@ -77,13 +93,34 @@ const Home = () => {
     }
   }
 
+  const renderEmptyState = () => (
+    <div
+      className="homepage__empty-state-container"
+    >
+      <div
+        className="homepage__empty-state-title"
+      >
+        {"You need to link you notion workspace in order to start creating !"}
+      </div>
+      <div 
+        className="homepage__empty-state-btn"
+        onClick={onLinkNotionAccount}
+      >
+        {"Link Notion Workspace"}
+      </div>
+    </div>
+  )
+
   const renderCreateGreaph = () => {
 
     return (
       <Dialog header="Select a database" visible={displayModal} style={{ width: '600px' }} onHide={() => setDisplayModal(false)}>
-        <div className="homepage__popup-content">
-          <NotionDatabases/>
-        </div>
+        {hasIntegrations && (
+          <div className="homepage__popup-content">
+            <NotionDatabases/>
+          </div>
+        )}
+        {!hasIntegrations && renderEmptyState()}
       </Dialog>
     )
   }
@@ -97,35 +134,29 @@ const Home = () => {
           createGraphFunction={onCreateGraph}
         />
       )}
-      <div className="homepage__container" >
-        {!loading && (
-          <>
-            {!session ? (
-              <Auth 
-                supabaseClient={supabase} 
-                appearance={{ theme: ThemeSupa }} 
-                theme="light"
-                providers={[]}
-              />
-            ) : (
-              <div>
-                {tabRenderer[tab]()}
-                {/* {notionIntegrations?.length === undefined || notionIntegrations?.length === null || notionIntegrations?.length <= 0 && 
-                  <Button label="Link Notion account" onClick={onLinkNotionAccount} />
-                }
-                {notionIntegrations?.length !== undefined && notionIntegrations?.length !== null && notionIntegrations?.length > 0 && (
-                  <>
-                    <MyDashboards />
-                    <NotionDatabases />
-                    <Button label="Change Notion Integration" onClick={onLinkNotionAccount} />
-                  </>
-                )} */}
-              </div>
-            )}
-          </>
-        ) }
-        {loading && <ProgressSpinner />}
-      </div>
+      {!loading && session && (
+        <div className="homepage__container" >
+          {hasIntegrations && tabRenderer[tab]()}
+          {!hasIntegrations && renderEmptyState()}
+        </div>
+      ) }
+      {!loading && !session && (
+        <div className="landing__wrapper" >
+          <h1 className="landing__title">{'Improve any Notion Database with Powerful Visualizations'}</h1>
+          <div className="landing__auth-wrapper" >
+            <Auth 
+              supabaseClient={supabase} 
+              appearance={{ theme: ThemeSupa }} 
+              theme="light"
+              providers={[]}
+            />
+          </div>
+          <div className='landing__logo-container'>
+            <Image src="/iron_notes.svg" alt="Logo" width="64" height="64" />
+          </div>
+        </div>
+      ) }
+      {loading && <ProgressSpinner />}
       {renderCreateGreaph()}
     </div>
   )
