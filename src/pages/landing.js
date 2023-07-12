@@ -33,7 +33,7 @@ const Landing = () => {
     // Ready to take control of your Notion data and transform it into stunning visualizations? Try Wizetables today and see the difference it can make to your productivity and insights. Sign up now to get started!
   return (
     <div className="container" style={{ padding: '50px 0 100px 0' }}>
-        <div>Seamlessly Utilize your Notion Databases with Customizable Visualizations</div>
+        <div>Improve your Notion Databases with Customizable Visualizations</div>
         <div>Wizetables lets you easily create dynamic and interactive charts from your Notion databases. Take control of your data and gain insights that matter to you.</div>
     </div>
   )
