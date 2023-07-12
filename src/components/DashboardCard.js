@@ -75,7 +75,7 @@ const DashboardCard = ({userDashboard, onDeleteDashboard}) => {
       >
         <Dialog header="Delete Graph" visible={displayModal} style={{ width: '400px' }} onHide={hideModal}>
           <div className="graph-listing-card__popup-content">
-            Are you sure? You can't undo this action.
+            {"Are you sure? You can't undo this action."}
           </div>
           <div className="graph-listing-card__popup-bottom">
             <Button label="Cancel" onClick={() => setDisplayModal(false)} className="p-button-secondary"/>
