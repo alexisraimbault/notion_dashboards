@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { useSession, useSupabaseClient, useUser } from '@supabase/auth-helpers-react'
 import React, {useState, useEffect} from 'react'
 import { InputText } from 'primereact/inputtext';
+import { ProgressSpinner } from 'primereact/progressspinner';
 
 const NotionDatabases = () => {
   const session = useSession()
@@ -12,6 +13,8 @@ const NotionDatabases = () => {
   const {push} = useRouter()
   const [notionDatabases, setNotionDatabases] = useState([])
   const [queryText, setQueryText] = useState('')
+  const [isFetching, setIsFetching] = useState(false)
+  // TODO error handling
 
   useEffect(() => {
     console.log({queryText})
@@ -23,6 +26,7 @@ const NotionDatabases = () => {
   const onFilterType = e => setQueryText(e.target.value)
 
   const getNotionDbs = async () => {
+    setIsFetching(true)
     let { data, error, status } = await supabase
       .from('NOTION_INTEGRATIONS')
       .select('id, notion_token, notion_data, created_at')
@@ -30,6 +34,8 @@ const NotionDatabases = () => {
       .eq('id_user', user.id)
     
     if(data.length <= 0) {
+      // TODO error handling
+      setIsFetching(false)
       return
     }
 
@@ -54,6 +60,7 @@ const NotionDatabases = () => {
     }
   
     setNotionDatabases(response?.results || [])
+    setIsFetching(false)
   }
 
   const onDatabaseClick = databaseId => () => {
@@ -61,24 +68,27 @@ const NotionDatabases = () => {
   }
 
   return (
-    <div className="notion-dbs-wrapper">
-      <div className="title-basic">New Graph</div>
+    <div className="notion-dbs__wrapper">
+      {/* <div className="title-basic">New Graph</div> */}
       <InputText
         value={queryText} 
         onChange={onFilterType}
-        placeholder="Filter through your databases"
-        className="notion-db-input-container"
+        placeholder="Search"
+        className="notion-dbs__input-container"
       />
-      <div className="notion-db-options-list">
-        {notionDatabases.map(notionDatabase => (
+      <div className="notion-dbs__options-list">
+        {!isFetching && notionDatabases.map(notionDatabase => (
           <div
             key={`db-${notionDatabase?.id}`}
             onClick={onDatabaseClick(notionDatabase?.id)}
-            className="notion-db-option"
+            className="notion-dbs__option"
           >
             {notionDatabase?.title[0]?.plain_text}
           </div>
         ))}
+        {isFetching && (
+          <ProgressSpinner />
+        )}
       </div>
     </div>
   )
