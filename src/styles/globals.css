@@ -209,32 +209,86 @@ body,
   }
 }
 
-.editor-wrapper,
-.editor-inner-container {
-  width: 100vw;
-  height: 100vh;
-}
-
-.editor-inner-container {
+.editor__wrapper,
+.editor__inner-wrapper {
   display: flex;
-}
-
-.editor-options-container {
   height: 100vh;
-  padding: 20px 40px;
-  border-right: var(--custom-border);
-  width: 400px;
+  width: 100vw;
 }
 
-.editor-option-container {
+.editor__options-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0 0 0 20px;
+}
+
+.editor__options-container {
+  flex-direction: column;
+  background-color: white;
+  max-width: 300px;
+  border-radius: var(--custom-border-radius);
+  border: var(--custom-border-thic);
+  padding: 40px 20px;
+}
+
+.editor__wrapper .p-dropdown,
+.editor__wrapper .p-inputtext {
+  width: 100% !important;
+}
+
+.editor__charts-wrapper {
+  flex-grow: 1;
+  max-height: 100vh;
+  overflow: scroll;
+  padding: 40px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.editor__logo-container {
+  margin-top: 36px;
+}
+
+.editor__option-container {
   margin-bottom: 20px;
 }
 
-.editor-option-title {
+.editor__option-title {
   font-size: 18px;
   font-weight: bold;
   color: var(--custom-color-secondary);
   margin-bottom: 12px;
+}
+
+.editor__cta {
+  font-size: 24px;
+  font-weight: bold;
+  color: white !important;
+  cursor: pointer;
+  padding: 12px 24px;
+  border-radius: var(--custom-border-radius);
+  background-color: var(--custom-color-brand);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.editor__copy-embed-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.editor__subtitle {
+  text-align: center;
+  font-size: 13px;
+  color: var(--custom-color-secondary);
+  margin-top: 8px;
+  font-style: italic;
 }
 
 .charts-wrapper {
@@ -251,10 +305,17 @@ body,
   margin-top: 8px;
 }
 
-.go-back-container {
-  margin-bottom: 32px;
+.editor__go-back-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
   color: var(--custom-color-secondary);
   cursor: pointer;
+  /* margin-right: auto; */
+}
+
+.editor__go-back-container .pi {
+  margin-right: 12px;
 }
 
 .title-basic {
@@ -336,6 +397,7 @@ body,
   padding: 12px 24px;
   border-radius: var(--custom-border-radius);
   background-color: var(--custom-color-brand);
+  text-align: center;
 }
 
 .homepage__account-container {

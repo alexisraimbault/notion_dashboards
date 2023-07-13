@@ -9,6 +9,7 @@ import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { ProgressSpinner } from 'primereact/progressspinner';
+import Image from 'next/image'
 
 const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
   const session = useSession()
@@ -186,7 +187,7 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
 
     // TODO
     return data.start
-    // TODO group by wook / month / year input
+    // TODO group by week / month / year input
     // TODO add dates without data with a '0' value checkbox
   }
   // - email
@@ -285,8 +286,7 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
   const notionGetstatus = item => {
     const data = item.status
 
-    // TODO
-    return 0
+    return data?.name || ''
   }
   // - title
   const notionGettitle = item => {
@@ -314,6 +314,7 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
       select: notionGetselect,
       title: notionGettitle,
       date: notionGetdate,
+      'status': notionGetstatus,
     }
   
     const itemType = item.type 
@@ -512,15 +513,62 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
   const porpertiesOptions = getPropertiesArray()
   const graphData = getGraphData()
   console.log({graphData})
+
+  const tooltipFormatter = (value, name, props) => {
+    let formattedName = 'Y'
+
+    porpertiesOptions.forEach(propertyItem => {
+      if(propertyItem.id === graphSettings?.YAxisId) {
+        formattedName = propertyItem?.name
+      }
+    })
+
+    return [value, formattedName]
+  }
+
+
+// Divergent
+// #00876c
+// #4b9c70
+// #78b076
+// #a3c37f
+// #cfd68d
+// #fae89f
+// #f5ca7f
+// #f1aa67
+// #eb8857
+// #e16551
+// #d43d51
+
+// Blues
+// #004c6d
+// #005e81
+// #007094
+// #0083a7
+// #0096ba
+// #00aacc
+// #00bede
+// #00d3ef
+// #00e8ff
+
+// Palette
+// #003f5c
+// #2f4b7c
+// #665191
+// #a05195
+// #d45087
+// #f95d6a
+// #ff7c43
+// #ffa600
   
   // TODO integrate color rotations
   const renderLineChart = () => (
     <ResponsiveContainer width="100%" height={400}>
       <LineChart data={graphData}>
-        <Line type="monotone" dataKey="YItemData" stroke="#8884d8" />
+        <Line type="monotone" dataKey="YItemData" stroke="var(--custom-red)" />
         <XAxis dataKey="XItemData" />
         <YAxis dataKey="YItemData" />
-        <Tooltip />
+        <Tooltip formatter={tooltipFormatter} />
       </LineChart>
     </ResponsiveContainer>
   );
@@ -530,8 +578,8 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
       <BarChart data={graphData}>
         <XAxis dataKey="XItemData" />
         <YAxis dataKey="YItemData" />
-        <Bar dataKey="YItemData" fill="#8884d8" />
-        <Tooltip />
+        <Bar dataKey="YItemData" fill="var(--custom-red)" />
+        <Tooltip formatter={tooltipFormatter} />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -539,7 +587,7 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
   const renderDoughnutChart = () => (
     <ResponsiveContainer width="100%" height={400}>
       <PieChart>
-        <Pie data={graphData} dataKey="YItemData" nameKey="XItemData" cx="50%" cy="50%" innerRadius={50} outerRadius={90} fill="#8884d8" />
+        <Pie data={graphData} dataKey="YItemData" nameKey="XItemData" cx="50%" cy="50%" innerRadius={50} outerRadius={90} fill="var(--custom-red)" />
         <Tooltip />
       </PieChart>
     </ResponsiveContainer>
@@ -557,61 +605,76 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
     }
 
     return (
-      <div className='charts-wrapper'>
+      <div className='editor__charts-wrapper'>
         {renderChartFunctionMap[graphSettings?.chartType]()}
       </div>
     )
   }
 
   return (
-    <div className='editor-wrapper'>
+    <div className='editor__wrapper'>
       {(notionDatabaseInfo?.properties !== null && notionDatabaseInfo?.properties !== undefined) ? (
-        <div className='editor-inner-container'>
+        <div className='editor__inner-wrapper'>
           {!isEmbed && (
-            <div className='editor-options-container'>
+            <div className='editor__options-wrapper'>
               <div 
-                className='go-back-container'
+                className='editor__go-back-container'
                 onClick={onNavigateToDashboard}
               >
-                {'< Back to dashboard'}
-              </div>
-              <div className='editor-option-container'>
-                <div className='editor-option-title'>Chart type :</div>
-                <Dropdown value={graphSettings?.chartType} onChange={updateChartType} options={chartOptions} optionLabel="name" optionValue="id" placeholder="Select a Property" />
-              </div>
-              <div className='editor-option-container'>
-                <div className='editor-option-title'>X Axis :</div>
-                <Dropdown value={graphSettings?.XAxisId} onChange={updateXAxis} options={porpertiesOptions} optionLabel="name" optionValue="id" placeholder="Select a Property" />
-              </div>
-              <div className='editor-option-container'>
-                <div className='editor-option-title'>Y Axis :</div>
-                <Dropdown value={graphSettings?.YAxisId} onChange={updateYAxis} options={porpertiesOptions} optionLabel="name" optionValue="id" placeholder="Select a Property" />
-              </div>
-              <div className='editor-option-container'>
-                <div className='editor-option-title'>Y Axis aggregation :</div>
-                <Dropdown value={graphSettings?.YAxisAggregationId} onChange={updateYAxisAggregation} options={YAxisAggregationOptions} optionLabel="name" optionValue="id" placeholder="Select an Aggregation" />
-              </div>
-              <div className='editor-option-container'>
-                <div className='editor-option-title'>Graph title</div>
-                <InputText 
-                  value={dashboardName} 
-                  onChange={onEditDashboardName}
-                  placeholder="My Graph"
+                <i 
+                  className="pi pi-arrow-circle-left" 
+                  style={{ color: 'var(--custom-color-secondary)', fontSize: '1rem' }}
                 />
+                <div>{'Back to dashboard'}</div>
               </div>
-              {/* <div className='editor-option-container'>
-                <div className='editor-option-title'>[WIP] data filters</div>
-              </div> */}
-              <div className='editor-option-container'>
-                <Button label="Save" loading={isSaveLoading} onClick={onSave} />
-              </div>
-              {(usedDashboardId !== null && usedDashboardId !== undefined) && (
-                <div className='editor-option-container'>
-                  <Button label="Copy Embed Link" onClick={onCopyEmbedLink} />
-                  {/* TODO popup, be able to make link not avaibable for privacy */}
-                  <div className="subtitle">{'Paste this Link into Notion and choose the "Create Embed" option'}</div>
+              <div className='editor__options-container'>
+                <div className='editor__option-container'>
+                  <div className='editor__option-title'>Chart type :</div>
+                  <Dropdown value={graphSettings?.chartType} onChange={updateChartType} options={chartOptions} optionLabel="name" optionValue="id" placeholder="Select a Property" />
                 </div>
-              )}
+                <div className='editor__option-container'>
+                  <div className='editor__option-title'>X Axis :</div>
+                  <Dropdown value={graphSettings?.XAxisId} onChange={updateXAxis} options={porpertiesOptions} optionLabel="name" optionValue="id" placeholder="Select a Property" />
+                </div>
+                <div className='editor__option-container'>
+                  <div className='editor__option-title'>Y Axis :</div>
+                  <Dropdown value={graphSettings?.YAxisId} onChange={updateYAxis} options={porpertiesOptions} optionLabel="name" optionValue="id" placeholder="Select a Property" />
+                </div>
+                <div className='editor__option-container'>
+                  <div className='editor__option-title'>Y Axis aggregation :</div>
+                  <Dropdown value={graphSettings?.YAxisAggregationId} onChange={updateYAxisAggregation} options={YAxisAggregationOptions} optionLabel="name" optionValue="id" placeholder="Select an Aggregation" />
+                </div>
+                <div className='editor__option-container'>
+                  <div className='editor__option-title'>Graph title</div>
+                  <InputText 
+                    value={dashboardName} 
+                    onChange={onEditDashboardName}
+                    placeholder="My Graph"
+                  />
+                </div>
+                {/* <div className='editor__option-container'>
+                  <div className='editor__option-title'>[WIP] data filters</div>
+                </div> */}
+                <div 
+                  className="editor__cta"
+                  onClick={onSave}
+                >
+                  {"Save"}
+                </div>
+                {/* <div className='editor__option-container'>
+                  <Button label="Save" loading={isSaveLoading} onClick={onSave} />
+                </div> */}
+                {(usedDashboardId !== null && usedDashboardId !== undefined) && (
+                  <div className='editor__copy-embed-container'>
+                    <Button label="Copy Embed Link" onClick={onCopyEmbedLink} />
+                    {/* TODO popup, be able to make link not avaibable for privacy */}
+                    <div className="editor__subtitle">{'Paste this Link into Notion and choose the "Create Embed" option'}</div>
+                  </div>
+                )}
+              </div>
+              <div className='editor__logo-container'>
+                <Image src="/iron_notes.svg" alt="Logo" width="64" height="64" />
+              </div>
             </div>
           )}
           {renderCharts()}
