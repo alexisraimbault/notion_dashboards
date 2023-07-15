@@ -142,7 +142,7 @@ const Home = () => {
       ) }
       {!loading && !session && (
         <div className="landing__wrapper" >
-          <h1 className="landing__title">{'Improve any Notion Database with Powerful Visualizations'}</h1>
+          <h1 className="landing__title">{'Improve Notion Databases with Powerful Visualizations'}</h1>
           <div className="landing__auth-wrapper" >
             <Auth 
               supabaseClient={supabase} 
