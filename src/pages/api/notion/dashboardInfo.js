@@ -21,6 +21,7 @@ export default async function handler(req, res) {
                 //     'value': 'database',
                 //     'property': 'object'
                 // }
+                'page_size': 100
             })
         })
 
