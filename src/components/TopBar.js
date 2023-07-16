@@ -35,7 +35,7 @@ const TopBar = ({setTabFunction, logoutFunction, createGraphFunction}) => {
             Logout
         </div>
         <div 
-            className='topbar__item-container'
+            className='topbar__item-container topbar__item-container--disabled'
         >
             Upgrade
         </div>

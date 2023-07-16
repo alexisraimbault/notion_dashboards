@@ -661,7 +661,7 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
         <YAxis dataKey="YItemData" />
         <Bar dataKey="YItemData" fill="var(--custom-red)" >
           {
-            graphData.map((entry, index) => <Cell fill={palette3[index % palette3.length]}/>)
+            graphData.map((entry, index) => <Cell key={`color-cell-${index}`} fill={palette3[index % palette3.length]}/>)
           }
         </Bar>
         <Tooltip formatter={tooltipFormatter} />
@@ -684,7 +684,7 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
           // fill="var(--custom-red)" 
         >
           {
-            graphData.map((entry, index) => <Cell fill={palette3[index % palette3.length]}/>)
+            graphData.map((entry, index) => <Cell key={`color-cell-${index}`} fill={palette3[index % palette3.length]}/>)
           }
         </Pie>
         <Tooltip />
@@ -771,6 +771,7 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
                     {'General'}
                     <div className='editor__options-dash'/>
                   </div>
+                  <div className='editor__horizontal-space' />
                   <div
                     className={`editor__options-tab-option${editorMode === 'advanced' ? ' editor__options-tab-active' : ''}`}
                     onClick={() => setEditorMode('advanced')}

@@ -7,15 +7,20 @@ body {
   --custom-box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.2);
   --custom-color: #323338;
   --custom-color-brand: #0073ea;
+  --custom-color-brand-dark: #0263c7;
   --custom-color-brand-light: #d5e5fc  ;
   --custom-color-secondary: #676879;
   --custom-border: 1px solid #d0d4e4;
-  --custom-border-thic: 4px solid #d0d4e4;
-  --custom-border-width-thic: 4px;
-  --custom-border-radius: 8px;
+  /* --custom-border-thic: 4px solid #d0d4e4; */
+  --custom-border-thic: none;
+  --custom-border-thin: solid 1px var(--custom-color-secondary);
+  /* --custom-border-width-thic: 4px; */
+  --custom-border-width-thic: O;
+  --custom-border-radius: 4px;
   --custom-spacing: 5px;
   --custom-green: #00CC6F;
   --custom-red: #F65F7C;
+  --custom-color-transition: .2s ease-out;
 
   padding: 0;
   margin: 0;
@@ -46,6 +51,11 @@ body,
 .p-button {
   background-color: var(--custom-color-brand) !important;
   border: none !important;
+  transition: var(--custom-color-transition) !important;
+}
+
+.p-button:hover {
+  background-color: var(--custom-color-brand-dark) !important;
 }
 
 .p-button > span {
@@ -55,11 +65,12 @@ body,
 .p-button-secondary {
   background-color: white !important;
   /* border: 1px solid var(--custom-color-secondary) !important; */
-  border : var(--custom-border-thic) !important;
+  border : var(--custom-border-thin) !important;
 }
 
 .p-button-secondary:hover {
-  border-color: var(--custom-color-brand-light) !important;
+  /* border-color: var(--custom-color-brand-light) !important; */
+  background-color: var(--custom-color-brand-light) !important;
 }
 
 .p-button-secondary > span {
@@ -72,6 +83,7 @@ body,
 }
 
 .p-button-danger:hover {
+  background-color: var(--custom-red) !important;
   border-color: var(--custom-color-brand-light) !important;
 }
 
@@ -105,7 +117,8 @@ body,
 }
 
 .graph-listing-card__menu-btn:hover {
-  background-color: var(--custom-color-brand-light);
+  /* background-color: var(--custom-color-brand-light); */
+  background-color: var(--custom-bg-color);
 }
 
 .graph-listing-card__popup-bottom {
@@ -145,13 +158,19 @@ body,
   width: 100%;
   margin-bottom: 20px;
   border-radius: var(--custom-border-radius);
-  background: linear-gradient(to left, var(--custom-bg-color) 50%, var(--custom-green) 50%) right;
+  background: linear-gradient(to left, var(--custom-bg-color) 50%, var(--custom-color-brand-light) 50%) right;
   background-size: 200%;
   transition: .3s ease-out;
 }
 
 .topbar__item-container:hover {
   background-position: left;
+}
+
+.topbar__item-container--disabled {
+  cursor: default !important;
+  background: #a2a2a3 !important;
+  /* color: var(--custom-bg-color) !important; */
 }
 
 .topbar__new-graph {
@@ -165,16 +184,16 @@ body,
   width: 100%;
   margin-bottom: 40px;
   border-radius: var(--custom-border-radius);
-  transition: .5s ease-out;
+  transition: var(--custom-hover-transition);
   background-color: var(--custom-color-brand);
   /* background-color: var(--custom-color-brand-light); */
   /* background: linear-gradient(to left, var(--custom-color-brand) 50%, var(--custom-red) 50%) right; */
   background-size: 200%;
 }
 
-/* .topbar__new-graph:hover {
-  background-position: left;
-} */
+.topbar__new-graph:hover {
+  background-color: var(--custom-color-brand-dark);
+}
 
 .topbar__bottom-spaced {
   margin-bottom: auto;
@@ -251,8 +270,12 @@ body,
   color: var(--custom-color-secondary);
   padding-top: 28px;
   margin-bottom: 28px;
-  margin-right: 12px;
+  /* margin-right: 12px; */
   cursor: pointer;
+}
+
+.editor__horizontal-space {
+  width: 24px;
 }
 
 .editor__options-dash {
@@ -329,6 +352,11 @@ body,
   background-color: var(--custom-color-brand);
   text-align: center;
   margin-top: auto;
+  transition: var(--custom-color-transition)
+}
+
+.editor__cta:hover {
+  background-color: var(--custom-color-brand-dark);
 }
 
 .editor__copy-embed-container {
@@ -372,7 +400,17 @@ body,
   margin-right: 24px;
   color: var(--custom-color-secondary);
   cursor: pointer;
+  background-color: white;
+  padding: 0 1.25rem;
+  /* height: calc(100% - 2px); */
+  height: 100%;
+  border-radius: var(--custom-border-radius);
+  /* border: var(--custom-border-thin); */
   /* margin-right: auto; */
+}
+
+.editor__go-back-container:hover {
+  background-color: var(--custom-color-brand-light);
 }
 
 .editor__go-back-container .pi {
@@ -404,6 +442,11 @@ body,
   border-radius: var(--custom-border-radius);
   cursor: pointer;
   width: 180px;
+  transition: var(--custom-color-transition);
+}
+
+.graph-listing-card:hover {
+  background-color: var(--custom-color-brand-light);
 }
 
 .homepage__empty-state-container {
@@ -421,6 +464,7 @@ body,
   font-weight: bold;
   color: var(--custom-color-secondary);
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .homepage__empty-state-btn {
@@ -431,6 +475,11 @@ body,
   padding: 12px 24px;
   border-radius: var(--custom-border-radius);
   background-color: var(--custom-color-brand);
+  transition: var(--custom-hover-transition);
+}
+
+.homepage__empty-state-btn:hover {
+  background-color: var(--custom-color-brand-dark);
 }
 
 .graph-listing__empty-state-container {
@@ -459,6 +508,11 @@ body,
   border-radius: var(--custom-border-radius);
   background-color: var(--custom-color-brand);
   text-align: center;
+  transition: var(--custom-color-transition);
+}
+
+.graph-listing__empty-state-btn:hover {
+  background-color: var(--custom-color-brand-dark);
 }
 
 .homepage__account-container {
@@ -502,11 +556,12 @@ body,
   cursor: pointer;
   padding: 12px 24px;
   border-radius: var(--custom-border-radius);
-  border: var(--custom-border-thic);
+  border: var(--custom-border-thin);
+  transition: var(--custom-color-transition);
 }
 
 .homepage__account-integration-btn:hover {
-  border-color: var(--custom-color-brand-light);
+  background-color: var(--custom-color-brand-light);
 }
 
 .landing__wrapper {
@@ -540,7 +595,7 @@ body,
 .supabase-auth-ui_ui-input {
   border-radius: var(--custom-border-radius);
   /* border: var(--custom-border-width-thic) solid var(--custom-color-brand-light) !important; */
-  border: var(--custom-border-thic) !important;
+  border: var(--custom-border-thin) !important;
 }
 
 .supabase-auth-ui_ui-anchor {
@@ -586,7 +641,7 @@ body,
 }
 
 .notion-dbs__input-container {
-  border: var(--custom-border-thic) !important;
+  border: var(--custom-border-thin) !important;
 }
 
 .notion-dbs__input-container:hover,
@@ -597,7 +652,7 @@ body,
 }
 
 .notion-dbs__options-list {
-  border: var(--custom-border-thic) !important;
+  border: var(--custom-border-thin) !important;
   border-radius: var(--custom-border-radius);
   height: 230px;
   overflow: scroll;
