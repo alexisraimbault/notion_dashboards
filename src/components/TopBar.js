@@ -34,11 +34,11 @@ const TopBar = ({setTabFunction, logoutFunction, createGraphFunction}) => {
         >
             Logout
         </div>
-        <div 
+        {/* <div 
             className='topbar__item-container topbar__item-container--disabled'
         >
             Upgrade
-        </div>
+        </div> */}
         <div className='topbar__logo-container'>
             <Image src="/iron_notes.svg" alt="Logo" width="52" height="52" />
         </div>
