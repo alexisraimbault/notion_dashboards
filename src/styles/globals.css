@@ -11,16 +11,22 @@ body {
   --custom-color-brand-light: #d5e5fc  ;
   --custom-color-secondary: #676879;
   --custom-border: 1px solid #d0d4e4;
+  --light-grey: #ced4da;
   /* --custom-border-thic: 4px solid #d0d4e4; */
   --custom-border-thic: none;
   --custom-border-thin: solid 1px var(--custom-color-secondary);
   /* --custom-border-width-thic: 4px; */
   --custom-border-width-thic: O;
   --custom-border-radius: 4px;
+  --hover-blue: #6366F1;
+  --focus-light-blue: #C7D2FE;
+  --focus-box-shadow: 0 0 0 0.2rem var(--focus-light-blue);
   --custom-spacing: 5px;
   --custom-green: #00CC6F;
   --custom-red: #F65F7C;
   --custom-color-transition: .2s ease-out;
+  --custom-hover-transition: .2s ease-out;
+  --custom-transition: .2s ease-out;
 
   padding: 0;
   margin: 0;
@@ -668,4 +674,102 @@ body,
 
 .notion-dbs__option:hover {
   background-color: var(--custom-color-brand-light);
+}
+
+
+/* LEETSY MAPPING */
+
+.mapping__container {
+  min-height: 100vh;
+  min-width: 100vw;
+}
+
+.mapping__block-container {
+
+}
+
+.mapping__input {
+  width: 240px;
+}
+
+.mapping__block-link-up {
+  height: 24px;
+  margin-left: 24px;
+  width: 1px;
+  background-color: var(--light-grey);
+}
+
+.mapping__block-inner {
+  padding: 0.75rem 0.75rem;;
+  border: 1px solid var(--light-grey);
+  background-color: white;
+  border-radius: var(--custom-border-radius);
+  cursor: pointer;
+  width: 240px;
+  transition: var(--custom-transition);
+}
+
+.mapping__block-inner--active {
+  box-shadow: var(--focus-box-shadow);
+  border-color: var(--hover-blue);
+  width: 80vw;
+}
+
+.mapping__block-inner:hover {
+  border-color: var(--hover-blue);
+}
+
+.mapping__column {
+  display: flex;
+  flex-direction: column;
+}
+
+.mapping__inner-container {
+  display: flex;
+}
+
+.mapping__blocks-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.mapping__block-content {
+  height: 0;
+  overflow: hidden;
+  transition: var(--custom-transition);
+}
+
+.mapping__block-content--active {
+  height: auto;
+  overflow: visible;
+  padding-top: 24px;
+}
+
+.mapping__subelements {
+  margin-bottom: 24px;
+}
+
+.mapping__subelement-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.mapping__subelement-title {
+  margin-right: 8px;
+}
+
+.mapping__delete-icon {
+  color: var(--custom-color-secondary) !important;
+  cursor: pointer;
+}
+
+.mapping__delete-icon:hover {
+  color: var(--custom-red) !important;
+}
+
+.mapping_block-explanation {
+  color: var(--custom-color-secondary) !important;
+  margin-bottom: 24px;
+
 }
