@@ -2,6 +2,7 @@ import '../styles/globals.css'
 import 'primeicons/primeicons.css';
 import "primereact/resources/primereact.min.css";
 import "primereact/resources/themes/lara-light-indigo/theme.css";
+import 'reactflow/dist/style.css';
 import { createBrowserSupabaseClient } from '@supabase/auth-helpers-nextjs'
 import { SessionContextProvider } from '@supabase/auth-helpers-react'
 import { useEffect, useState } from 'react'
