@@ -187,6 +187,12 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
     setGraphSettings(newGraphSettings)
   }
 
+  const updateXAxisSecondary = e => {
+    const newGraphSettings = {...graphSettings}
+    newGraphSettings.XAxisSecondaryId = e.value
+    setGraphSettings(newGraphSettings)
+  }
+
   // Notion types :
   // - checkbox
   const notionGetcheckbox = item => {
@@ -365,6 +371,8 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
     }
   }, [session, databaseId, initialDashboardId])
 
+  const hasSecondaryXAxis = graphSettings?.XAxisSecondaryId !== null && graphSettings?.XAxisSecondaryId !== undefined
+
   const initDashboardData = async () => {
     let { data:data1, error1, status1 } = await supabase
     .from('DASHBOARD')
@@ -453,7 +461,7 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
     if(notionDatabaseInfo?.properties === null || notionDatabaseInfo?.properties === undefined) {
       return []
     }
-    const res = []
+    const res = [{id: null, name: 'None'}]
     Object.keys(notionDatabaseInfo?.properties).forEach(property => {
       res.push(notionDatabaseInfo.properties[property])
     })
@@ -514,13 +522,17 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
       return []
     }
 
+    const secondaryXAxisId = graphSettings?.XAxisSecondaryId
+
     const res = []
     const dataObject = {}
+    const XSecondaryValues = []
 
     // console.log({notionDatabaseItems})
     notionDatabaseItems?.forEach(notionDbItem => {
       let XProperty = null
       let YProperty = null
+      let XSecondaryProperty = null
 
       Object.keys(notionDbItem?.properties)?.forEach(notionDbItemPropertyKey => {
         const notionDbItemProperty = notionDbItem.properties[notionDbItemPropertyKey]
@@ -530,15 +542,36 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
         if(notionDbItemProperty?.id === graphSettings.YAxisId) {
           YProperty = notionDbItemProperty
         }
+        if(hasSecondaryXAxis && notionDbItemProperty?.id === secondaryXAxisId) {
+          XSecondaryProperty = notionDbItemProperty
+        }
       })
 
       const XValue = getNotionParamValue(XProperty)
       const YValue = getNotionParamValue(YProperty)
+      const XSecondaryValue = hasSecondaryXAxis ? getNotionParamValue(XSecondaryProperty) : null
+
+      if(hasSecondaryXAxis && !XSecondaryValues.includes(XSecondaryValue)) {
+        XSecondaryValues.push(XSecondaryValue)
+      }
       
       if(!Object.keys(dataObject).includes(XValue)) {
-        dataObject[XValue] = getInitAggegValue(YValue)
+        if(hasSecondaryXAxis) {
+          dataObject[XValue] = {}
+          dataObject[XValue][XSecondaryValue] = getInitAggegValue(YValue)
+        } else {
+          dataObject[XValue] = getInitAggegValue(YValue)
+        }
       } else {
-        dataObject[XValue] = getNewAggegValue(dataObject[XValue], YValue)
+        if(hasSecondaryXAxis) {
+          if(!Object.keys(dataObject[XValue]).includes(XSecondaryValue)) {
+            dataObject[XValue][XSecondaryValue] = getInitAggegValue(YValue)
+          } else {
+            dataObject[XValue][XSecondaryValue] = getNewAggegValue(dataObject[XValue][XSecondaryValue], YValue)
+          }
+        } else { 
+          dataObject[XValue] = getNewAggegValue(dataObject[XValue], YValue)
+        }
       }
     })
 
@@ -571,22 +604,38 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
     }
 
     Object.keys(dataObject)?.sort()?.forEach(XItemData => {
-      const YItemData = graphSettings.YAxisAggregationId === 'avg' ? dataObject[XItemData].reduce((partialSum, a) => partialSum + a, 0)/dataObject[XItemData].length : dataObject[XItemData]
-      res.push({
-        XItemData,
-        YItemData,
-      })
+      if(hasSecondaryXAxis) {
+        const tmpRes = {XItemData}
+        Object.keys(dataObject[XItemData])?.sort()?.forEach(XSecondaryItemData => {
+          const YItemData = graphSettings.YAxisAggregationId === 'avg' ? dataObject[XItemData][XSecondaryItemData].reduce((partialSum, a) => partialSum + a, 0)/dataObject[XItemData][XSecondaryItemData].length : dataObject[XItemData][XSecondaryItemData]
+          tmpRes[XSecondaryItemData] = YItemData
+        })
+
+        res.push(tmpRes)
+      } else {
+        const YItemData = graphSettings.YAxisAggregationId === 'avg' ? dataObject[XItemData].reduce((partialSum, a) => partialSum + a, 0)/dataObject[XItemData].length : dataObject[XItemData]
+        res.push({
+          XItemData,
+          YItemData,
+        })
+      }
     })
 
-    res.sort(compareFunction)
+    // TODO sort with secondary X axis
+    if(!hasSecondaryXAxis) {
+      res.sort(compareFunction)
+    }
 
-    return res
+    return {chartData: res, XSecondaryValues}
   }
 
   const sortPorpertiesOptions = getSortPropertiesArray()
   const porpertiesOptions = getPropertiesArray()
-  const graphData = getGraphData()
-  // console.log({graphData})
+  const graphDataObject = getGraphData()
+  const graphData = graphDataObject.chartData
+  const secondaryValues = graphDataObject.XSecondaryValues
+
+  console.log({graphData, secondaryValues})
 
   const tooltipFormatter = (value, name, props) => {
     let formattedName = 'Y'
@@ -645,25 +694,49 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
     <ResponsiveContainer width="100%" height={"100%"}>
       <LineChart data={graphData}>
         <CartesianGrid strokeDasharray="3 3" />
-        <Line type="monotone" dataKey="YItemData" stroke="var(--custom-red)" />
+        {!hasSecondaryXAxis && (
+          <Line type="monotone" dataKey="YItemData" stroke={palette3[0]} />
+        )}
+        {hasSecondaryXAxis && secondaryValues?.map((XSecondaryValue, index) => {
+          console.log({XSecondaryValue})
+          return (
+            <Line key={`line-${index}`} type="monotone" dataKey={`${XSecondaryValue}`} stroke={palette3[index % palette3.length]} />
+          )
+        })}
+        
         <XAxis dataKey="XItemData" />
-        <YAxis dataKey="YItemData" />
+        <YAxis />
+        {/* <YAxis dataKey="YItemData" /> */}
         <Tooltip formatter={tooltipFormatter} />
       </LineChart>
     </ResponsiveContainer>
   );
+  // console.log({items: secondaryValues?.map((XSecondaryValue, index) => {
+  //   return (
+  //     <Bar key={`color-bar-${index}`} dataKey={XSecondaryValue} fill={palette3[index % palette3.length]} />
+  //   )
+  // })})
   
   const renderBarChart = () => (
     <ResponsiveContainer width="100%" height={"100%"}>
       <BarChart data={graphData}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="XItemData" />
-        <YAxis dataKey="YItemData" />
-        <Bar dataKey="YItemData" fill="var(--custom-red)" >
-          {
-            graphData.map((entry, index) => <Cell key={`color-cell-${index}`} fill={palette3[index % palette3.length]}/>)
-          }
-        </Bar>
+        <YAxis />
+        {/* <YAxis dataKey="YItemData" /> */}
+        {!hasSecondaryXAxis && (
+          <Bar dataKey="YItemData" fill="var(--custom-red)" >
+            {
+              graphData.map((entry, index) => <Cell key={`color-bar-${index}`} fill={palette3[index % palette3.length]}/>)
+            }
+          </Bar>
+        )}
+        {hasSecondaryXAxis && secondaryValues?.map((XSecondaryValue, index) => {
+          console.log({XSecondaryValue})
+          return (
+            <Bar key={`color-bar-${index}`} dataKey={`${XSecondaryValue}`} fill={palette3[index % palette3.length]} />
+          )
+        })}
         <Tooltip formatter={tooltipFormatter} />
       </BarChart>
     </ResponsiveContainer>
@@ -673,7 +746,8 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
     <ResponsiveContainer width="100%" height={"100%"}>
       <PieChart>
         {/* <CartesianGrid strokeDasharray="3 3" /> */}
-        <Pie 
+        {!hasSecondaryXAxis && (
+          <Pie 
           data={graphData} 
           dataKey="YItemData" 
           nameKey="XItemData" 
@@ -687,6 +761,14 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
             graphData.map((entry, index) => <Cell key={`color-cell-${index}`} fill={palette3[index % palette3.length]}/>)
           }
         </Pie>
+        )}
+        {/* {hasSecondaryXAxis && secondaryValues?.map((XSecondaryValue, index) => {
+          console.log({XSecondaryValue})
+          return (
+            <Bar key={`color-bar-${index}`} dataKey={`${XSecondaryValue}`} fill={palette3[index % palette3.length]} />
+          )
+        })} */}
+        
         <Tooltip />
         <Legend />
       </PieChart>
@@ -749,6 +831,11 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
             <div className='editor__vertical-space' />
             <Dropdown value={graphSettings?.orderByDirection} onChange={updateOrderByAsc} options={[{id: 'asc', name: 'Ascending'}, {id: 'desc', name: 'Descending'}]} optionLabel="name" optionValue="id" placeholder="Ascending" />
           </div>
+          <div className='editor__option-container'>
+            <div className='editor__option-title'>Secondary X Axis</div>
+            <Dropdown value={graphSettings?.XAxisSecondaryId} onChange={updateXAxisSecondary} options={porpertiesOptions} optionLabel="name" optionValue="id" placeholder="Select a Property" />
+          </div>
+          {/* TODO add secondary sort by */}
         </div>
       )
     }
