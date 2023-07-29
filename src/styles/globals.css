@@ -669,3 +669,23 @@ body,
 .notion-dbs__option:hover {
   background-color: var(--custom-color-brand-light);
 }
+
+.editor__tooltip-wrapper {
+  padding: 12px;
+  background-color: white;
+  border-radius: var(--custom-border-radius);
+}
+
+.recharts-tooltip-wrapper {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.editor__tooltip-title {
+  margin-bottom: 12px;
+}
+
+.editor__tooltip-value--spaced {
+  margin-bottom: 4px;
+}

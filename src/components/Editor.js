@@ -37,6 +37,26 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
     chartType: 'bar'
   })
 
+  const getPropertyData = propertyId => {
+    if(notionDatabaseInfo?.properties === null || notionDatabaseInfo?.properties === undefined || !propertyId) {
+      return null
+    }
+
+    let res = null
+
+    Object.keys(notionDatabaseInfo?.properties).forEach(property => {
+      if (notionDatabaseInfo?.properties[property]?.id === propertyId) {
+        res = notionDatabaseInfo?.properties[property]
+      }
+    })
+
+    return res
+  }
+
+  const xAxisProperty = getPropertyData(graphSettings?.XAxisId)
+  const yAxispProperty = getPropertyData(graphSettings?.YAxisId)
+  const xSecondaryAxisProperty = getPropertyData(graphSettings?.XAxisSecondaryId)
+  
   const YAxisAggregationOptions = [
     {name: 'Count', id: 'count'},
     {name: 'Sum', id: 'sum'},
@@ -178,7 +198,12 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
     const newGraphSettings = {...graphSettings}
     newGraphSettings.orderByDirection = e.value
     setGraphSettings(newGraphSettings)
+  }
 
+  const updateSecondaryOrderByAsc = e => {
+    const newGraphSettings = {...graphSettings}
+    newGraphSettings.secondaryOrderByDirection = e.value
+    setGraphSettings(newGraphSettings)
   }
 
   const updateYAxisAggregation = e => {
@@ -190,6 +215,10 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
   const updateXAxisSecondary = e => {
     const newGraphSettings = {...graphSettings}
     newGraphSettings.XAxisSecondaryId = e.value
+
+    if(newGraphSettings?.orderById === newGraphSettings?.YAxisId) {
+      newGraphSettings?.orderById === null
+    }
     setGraphSettings(newGraphSettings)
   }
 
@@ -341,7 +370,6 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
   }
 
   const getNotionParamValue = item => {
-    // console.log({item})
     const typeFormatMap = {
       number: notionGetnumber,
       rich_text: notionGetrich_text,
@@ -476,7 +504,11 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
 
     const res = []
     Object.keys(notionDatabaseInfo?.properties).forEach(property => {
-      if(notionDatabaseInfo.properties[property]?.id === graphSettings?.XAxisId || notionDatabaseInfo.properties[property]?.id === graphSettings?.YAxisId) {
+      if(notionDatabaseInfo.properties[property]?.id === graphSettings?.XAxisId) {
+        res.push(notionDatabaseInfo.properties[property])
+      }
+      
+      if((graphSettings?.XAxisSecondaryId === null || graphSettings?.XAxisSecondaryId === undefined) && notionDatabaseInfo.properties[property]?.id === graphSettings?.YAxisId) {
         res.push(notionDatabaseInfo.properties[property])
       }
     })
@@ -508,6 +540,34 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
     return initAggregValueByIdMap[graphSettings.YAxisAggregationId]
   }
 
+  const compareFunctionGeneric = (itemProperty, orderByDirectionSet) => (valueA, valueB) => {
+    let valueToCompareA = valueA
+    let valueToCompareB = valueB
+    let orderByDirectionToUse = orderByDirectionSet
+    
+    const isSelect = itemProperty?.type === 'select'
+    const isNumber = itemProperty?.type === 'number'
+
+    // TODO other sort behaviours for different data types
+    if(isSelect) {
+      orderByDirectionToUse = orderByDirectionSet === 'desc' ? 'asc' : 'desc'
+      valueToCompareA = itemProperty?.select?.options?.findIndex(element => element?.name === valueA)
+      valueToCompareB = itemProperty?.select?.options?.findIndex(element => element?.name === valueB)
+    }
+
+    if(isNumber) {
+      orderByDirectionToUse = orderByDirectionSet === 'desc' ? 'asc' : 'desc'
+    }
+
+    if(orderByDirectionToUse === 'desc') {
+      return valueToCompareA === valueToCompareB ? 0 : 
+        valueToCompareA > valueToCompareB ? 1 : -1
+    }
+
+    return valueToCompareA === valueToCompareB ? 0 : 
+      valueToCompareA > valueToCompareB ? -1 : 1
+  }
+
   const getGraphData = () => {
     if(
       notionDatabaseInfo?.properties === null || 
@@ -528,7 +588,6 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
     const dataObject = {}
     const XSecondaryValues = []
 
-    // console.log({notionDatabaseItems})
     notionDatabaseItems?.forEach(notionDbItem => {
       let XProperty = null
       let YProperty = null
@@ -575,29 +634,17 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
       }
     })
 
-    const compareFunction = (a, b) => {
+    const compareFunction = (itemProperty, orderByDirection) => (a, b) => {
       if(!graphSettings?.orderById) {
         return 0
       }
 
       if(graphSettings?.orderById === graphSettings?.XAxisId) {
-        if(graphSettings?.orderByDirection === 'desc') {
-          return a.XItemData === b.XItemData ? 0 : 
-            a.XItemData > b.XItemData ? 1 : -1
-        }
-
-        return a.XItemData === b.XItemData ? 0 : 
-          a.XItemData > b.XItemData ? -1 : 1
+        return compareFunctionGeneric(itemProperty, orderByDirection)(a.XItemData, b.XItemData)
       }
 
       if(graphSettings?.orderById === graphSettings?.YAxisId) {
-        if(graphSettings?.orderByDirection === 'desc') {
-          return a.YItemData === b.YItemData ? 0 : 
-            a.YItemData > b.YItemData ? 1 : -1
-        }
-
-        return a.YItemData === b.YItemData ? 0 : 
-          a.YItemData > b.YItemData ? -1 : 1
+        return compareFunctionGeneric(itemProperty, orderByDirection)(a.YItemData, b.YItemData)
       }
       
       return 0
@@ -621,9 +668,11 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
       }
     })
 
-    // TODO sort with secondary X axis
     if(!hasSecondaryXAxis) {
-      res.sort(compareFunction)
+      const sortProperty = graphSettings?.orderById === graphSettings?.YAxisId ? yAxispProperty : xAxisProperty
+      res.sort(compareFunction(sortProperty, graphSettings?.orderByDirection))
+    } else {
+      // TODO sort with x axis property if defined, but sorting has to be done differently
     }
 
     return {chartData: res, XSecondaryValues}
@@ -635,9 +684,7 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
   const graphData = graphDataObject.chartData
   const secondaryValues = graphDataObject.XSecondaryValues
 
-  console.log({graphData, secondaryValues})
-
-  const tooltipFormatter = (value, name, props) => {
+  const CustomTooltip = ({ active, payload, label }) => {
     let formattedName = 'Y'
 
     porpertiesOptions.forEach(propertyItem => {
@@ -645,6 +692,20 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
         formattedName = propertyItem?.name
       }
     })
+
+    return (
+      <div className='editor__tooltip-wrapper'>
+        <div className='editor__tooltip-title'>{formattedName}</div>
+        {payload?.map((itemData, itemIndex) => (
+          <div 
+            className={`editor__tooltip-value${itemIndex !== payload?.length - 1 ? ' editor__tooltip-value--spaced' : ''}`}
+            key={`tooltip-data-${itemIndex}`}
+          >
+            {`${payload?.length > 1 ? `${itemData?.name} : ` : ''}${itemData?.value}`}
+          </div>
+        ))}
+      </div>
+    )
 
     return [value, formattedName]
   }
@@ -689,7 +750,6 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
     '#ffa600',
   ]
   
-  // TODO integrate color rotations
   const renderLineChart = () => (
     <ResponsiveContainer width="100%" height={"100%"}>
       <LineChart data={graphData}>
@@ -697,8 +757,7 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
         {!hasSecondaryXAxis && (
           <Line type="monotone" dataKey="YItemData" stroke={palette3[0]} />
         )}
-        {hasSecondaryXAxis && secondaryValues?.map((XSecondaryValue, index) => {
-          console.log({XSecondaryValue})
+        {hasSecondaryXAxis && secondaryValues?.sort(compareFunctionGeneric(xSecondaryAxisProperty, graphSettings?.secondaryOrderByDirection))?.map((XSecondaryValue, index) => {
           return (
             <Line key={`line-${index}`} type="monotone" dataKey={`${XSecondaryValue}`} stroke={palette3[index % palette3.length]} />
           )
@@ -707,17 +766,13 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
         <XAxis dataKey="XItemData" />
         <YAxis />
         {/* <YAxis dataKey="YItemData" /> */}
-        <Tooltip formatter={tooltipFormatter} />
+        <Tooltip content={<CustomTooltip />} />
       </LineChart>
     </ResponsiveContainer>
   );
-  // console.log({items: secondaryValues?.map((XSecondaryValue, index) => {
-  //   return (
-  //     <Bar key={`color-bar-${index}`} dataKey={XSecondaryValue} fill={palette3[index % palette3.length]} />
-  //   )
-  // })})
   
-  const renderBarChart = () => (
+  const renderBarChart = () => {
+    return (
     <ResponsiveContainer width="100%" height={"100%"}>
       <BarChart data={graphData}>
         <CartesianGrid strokeDasharray="3 3" />
@@ -731,21 +786,20 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
             }
           </Bar>
         )}
-        {hasSecondaryXAxis && secondaryValues?.map((XSecondaryValue, index) => {
-          console.log({XSecondaryValue})
+        {hasSecondaryXAxis && secondaryValues?.sort(compareFunctionGeneric(xSecondaryAxisProperty, graphSettings?.secondaryOrderByDirection))?.map((XSecondaryValue, index) => {
           return (
             <Bar key={`color-bar-${index}`} dataKey={`${XSecondaryValue}`} fill={palette3[index % palette3.length]} />
           )
         })}
-        <Tooltip formatter={tooltipFormatter} />
+        <Tooltip content={<CustomTooltip />} />
       </BarChart>
     </ResponsiveContainer>
-  );
+  )};
   
+  // TODO render donut chart with evolution (several donuts)
   const renderDoughnutChart = () => (
     <ResponsiveContainer width="100%" height={"100%"}>
       <PieChart>
-        {/* <CartesianGrid strokeDasharray="3 3" /> */}
         {!hasSecondaryXAxis && (
           <Pie 
           data={graphData} 
@@ -762,13 +816,6 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
           }
         </Pie>
         )}
-        {/* {hasSecondaryXAxis && secondaryValues?.map((XSecondaryValue, index) => {
-          console.log({XSecondaryValue})
-          return (
-            <Bar key={`color-bar-${index}`} dataKey={`${XSecondaryValue}`} fill={palette3[index % palette3.length]} />
-          )
-        })} */}
-        
         <Tooltip />
         <Legend />
       </PieChart>
@@ -829,13 +876,20 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
             <div className='editor__option-title'>Sort by :</div>
             <Dropdown value={graphSettings?.orderById} onChange={updateOrderBy} options={sortPorpertiesOptions} optionLabel="name" optionValue="id" placeholder="None" />
             <div className='editor__vertical-space' />
-            <Dropdown value={graphSettings?.orderByDirection} onChange={updateOrderByAsc} options={[{id: 'asc', name: 'Ascending'}, {id: 'desc', name: 'Descending'}]} optionLabel="name" optionValue="id" placeholder="Ascending" />
+            <Dropdown value={graphSettings?.orderByDirection} onChange={updateOrderByAsc} options={[
+              {id: 'asc', name: 'Ascending'},
+              {id: 'desc', name: 'Descending'}
+            ]} optionLabel="name" optionValue="id" placeholder="Ascending" />
           </div>
           <div className='editor__option-container'>
             <div className='editor__option-title'>Secondary X Axis</div>
             <Dropdown value={graphSettings?.XAxisSecondaryId} onChange={updateXAxisSecondary} options={porpertiesOptions} optionLabel="name" optionValue="id" placeholder="Select a Property" />
+            <div className='editor__vertical-space' />
+            <Dropdown value={graphSettings?.secondaryOrderByDirection} onChange={updateSecondaryOrderByAsc} options={[
+              {id: 'asc', name: 'Ascending'},
+              {id: 'desc', name: 'Descending'}
+            ]} optionLabel="name" optionValue="id" placeholder="Ascending" />
           </div>
-          {/* TODO add secondary sort by */}
         </div>
       )
     }
