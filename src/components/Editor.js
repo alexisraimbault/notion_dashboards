@@ -825,12 +825,14 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
     <div className='editor__pies-wrapper'>
       {secondaryValues?.sort(compareFunctionGeneric(xSecondaryAxisProperty, graphSettings?.secondaryOrderByDirection))?.map((XSecondaryValue, index) => {
         return (
-          <div className='editor__pie-wrapper'>
+          <div 
+            className='editor__pie-wrapper'
+            key={`pie-${index}`}
+          >
             <div className='editor__pie-title'>{XSecondaryValue}</div>
             <ResponsiveContainer>
               <PieChart>
                 <Pie 
-                  key={`pie-${index}`}
                   data={graphData} 
                   dataKey={XSecondaryValue} 
                   nameKey="XItemData" 
