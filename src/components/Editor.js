@@ -634,7 +634,7 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
       }
     })
 
-    const compareFunction = (itemProperty, orderByDirection) => (a, b) => {
+    const compareFunctionDefault = (itemProperty, orderByDirection) => (a, b) => {
       if(!graphSettings?.orderById) {
         return 0
       }
@@ -648,6 +648,10 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
       }
       
       return 0
+    }
+
+    const compareFunctionWithSecondaryAxis = (itemProperty, orderByDirection) => (a, b) => {
+      return compareFunctionGeneric(itemProperty, orderByDirection)(a.XItemData, b.XItemData)
     }
 
     Object.keys(dataObject)?.sort()?.forEach(XItemData => {
@@ -670,9 +674,10 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
 
     if(!hasSecondaryXAxis) {
       const sortProperty = graphSettings?.orderById === graphSettings?.YAxisId ? yAxispProperty : xAxisProperty
-      res.sort(compareFunction(sortProperty, graphSettings?.orderByDirection))
+      res.sort(compareFunctionDefault(sortProperty, graphSettings?.orderByDirection))
     } else {
-      // TODO sort with x axis property if defined, but sorting has to be done differently
+      const sortProperty = xAxisProperty
+      res.sort(compareFunctionWithSecondaryAxis(sortProperty, graphSettings?.orderByDirection))
     }
 
     return {chartData: res, XSecondaryValues}
@@ -796,12 +801,10 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
     </ResponsiveContainer>
   )};
   
-  // TODO render donut chart with evolution (several donuts)
-  const renderDoughnutChart = () => (
+  const renderDoughnutChart = () => !hasSecondaryXAxis ? (
     <ResponsiveContainer width="100%" height={"100%"}>
       <PieChart>
-        {!hasSecondaryXAxis && (
-          <Pie 
+        <Pie 
           data={graphData} 
           dataKey="YItemData" 
           nameKey="XItemData" 
@@ -809,18 +812,46 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
           cy="50%" 
           innerRadius={0} 
           outerRadius={"80%"} 
-          // fill="var(--custom-red)" 
         >
           {
             graphData.map((entry, index) => <Cell key={`color-cell-${index}`} fill={palette3[index % palette3.length]}/>)
           }
         </Pie>
-        )}
         <Tooltip />
         <Legend />
       </PieChart>
     </ResponsiveContainer>
-  );
+  ) : (
+    <div className='editor__pies-wrapper'>
+      {secondaryValues?.sort(compareFunctionGeneric(xSecondaryAxisProperty, graphSettings?.secondaryOrderByDirection))?.map((XSecondaryValue, index) => {
+        return (
+          <div className='editor__pie-wrapper'>
+            <div className='editor__pie-title'>{XSecondaryValue}</div>
+            <ResponsiveContainer>
+              <PieChart>
+                <Pie 
+                  key={`pie-${index}`}
+                  data={graphData} 
+                  dataKey={XSecondaryValue} 
+                  nameKey="XItemData" 
+                  cx="50%" 
+                  cy="50%" 
+                  innerRadius={0} 
+                  outerRadius={"80%"} 
+                >
+                  {
+                    graphData.map((entry, index) => <Cell key={`color-cell-${index}`} fill={palette3[index % palette3.length]}/>)
+                  }
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        )
+      })}
+    </div>
+    );
 
   const renderCharts = () => {
     if(graphData === null || graphData === undefined || graphData.length === 0) {
@@ -835,6 +866,7 @@ const Editor = ({databaseId, initialDashboardId, isEmbed}) => {
 
     return (
       <div className='editor__charts-wrapper'>
+        <div className='editor__charts-title'>{dashboardName}</div>
         {renderChartFunctionMap[graphSettings?.chartType]()}
       </div>
     )
