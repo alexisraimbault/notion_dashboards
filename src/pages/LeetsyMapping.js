@@ -563,7 +563,7 @@ const LeetsyMapping = () => {
 
     const renderSocials = () => {
         const properties = {
-            blockExmplanation: "Can you find online or offline Social Spaces (events / communities / online groups, ...) ? ",
+            blockExmplanation: "Can you find online or online Social Spaces (events / communities / online groups, ...) ? ",
             newInputValue: editingSocial,
             newInputEditFunction: onEditCurrentSocial, 
             newInputKeyUpFunction: onDetectEnter('social'),
@@ -605,13 +605,13 @@ const LeetsyMapping = () => {
 
     const blocks = [
         {
-            label: 'Synonyms',
+            label: 'Intitulés de poste',
             id: 'syn',
             renderFunction: renderSynonyms,
             renderSubtitle: renderListGroupSubtitle(synonyms),
             renderWarning: renderListGroupWarning(synonyms, 3, "We advise you to find at least 3 synonyms"),
         }, {
-            label: 'Keywords',
+            label: 'Mots clés',
             id: 'keywords',
             renderFunction: renderKeywords,
             renderSubtitle: renderListGroupSubtitle(keywords),
@@ -623,19 +623,19 @@ const LeetsyMapping = () => {
             renderSubtitle: renderListGroupSubtitle(localisations),
             renderWarning: renderListGroupWarning(localisations, 2, "We advise you to find at least 2 different localisation keywords"),
         }, {
-            label: 'Companies',
+            label: 'Entreprises',
             id: 'comp',
             renderFunction: renderCompanies,
             renderSubtitle: renderListGroupSubtitle(companies),
             renderWarning: renderListGroupWarning(companies, 0, ''),
         }, {
-            label: 'Courses',
+            label: 'Formations',
             id: 'formations',
             renderFunction: renderCourses,
             renderSubtitle: renderListGroupSubtitle(courses),
             renderWarning: renderListGroupWarning(courses, 0, ''),
         }, {
-            label: 'Social Spaces',
+            label: 'Espaces en ligne',
             id: 'social',
             renderFunction: renderSocials,
             renderSubtitle: renderListGroupSubtitle(socials),

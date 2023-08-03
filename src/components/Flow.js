@@ -34,6 +34,7 @@ const Flow = ({nodes, edges, blockLabelToIdMap, activateBlock}) => {
                     {data?.data?.map((item, itemIndex) => (
                         <div 
                             className={`flow__subitem-container${itemIndex !== data?.data?.length - 1 ? ' flow__subitem-container--spaced' : ''}`}
+                            key={`item-${itemIndex}`}
                         >
                             {item}
                         </div>
