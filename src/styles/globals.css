@@ -213,6 +213,36 @@ body,
   margin-right: auto;
 }
 
+.legal__container {
+  padding: 40px 100px;
+  background-color: var(--custom-bg-color);
+}
+
+.legal__title {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 32px;
+}
+
+.legal__content {
+  font-size: 1.3rem;
+  margin-bottom: 64px;
+}
+
+.legal__subcontent {
+  font-size: 1.3rem;
+  /* font-weight: bold; */
+  margin-bottom: 24px;
+}
+
+.legal__subcontent--spaced {
+  margin-left: 24px;
+}
+
+.legal__subcontent--bottom-spaced {
+  margin-bottom: 64px;
+}
+
 /* Grid */
 
 .container {
@@ -718,4 +748,45 @@ body,
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 30px;
+}
+
+.graph-view__wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.graph-view__charts-wrapper {
+  height: 100%;
+  width: 100%;
+  padding: 100px 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.graph-view__tooltip-wrapper {
+  padding: 12px;
+  background-color: white;
+  border-radius: var(--custom-border-radius);
+}
+
+.recharts-tooltip-wrapper {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.graph-view__editor-container {
+  height: 100%;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--custom-color-brand-light);
+  text-align: center;
+  width: 20%;
 }
