@@ -55,8 +55,8 @@ const handler = async (req, res) => {
       const gptGraphId = supabaseResponse[0]?.id
 
     res.status(200).json({ 
-        preview_url: `${NEXT_PUBLIC_BASE_URL}/view/${gptGraphId}`,
-        edit_url: `${NEXT_PUBLIC_BASE_URL}/edit/${gptGraphId}`
+        preview_url: `${process.env.NEXT_PUBLIC_BASE_URL}/view/${gptGraphId}`,
+        edit_url: `${process.env.NEXT_PUBLIC_BASE_URL}/edit/${gptGraphId}`
     })
 }
 
