@@ -8,6 +8,8 @@ const handler = async (req, res) => {
         return
     }
 
+    console.log('BODY : ', req.body)
+
     const data = req.body?.data
     const settings = req.body?.settings
     const separator = req.body?.separator
