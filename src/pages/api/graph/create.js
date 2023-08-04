@@ -14,7 +14,7 @@ const handler = async (req, res) => {
     const settings = req.body?.settings
     const separator = req.body?.separator
 
-    const rows = data.split('\\n')
+    const rows = data.split('\n')
     
     if (rows.length <= 1) {
         res.status(405).send({ message: 'Data not correctly formatted' })
