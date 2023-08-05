@@ -58,10 +58,13 @@ paths:
                 properties:
                   preview_url:
                     type: string
-                    description: The link to the graph visualisation
+                    description: The link to the chart visualisation
                   edit_url:
                     type: string
-                    description: The link to the graph editor tool
+                    description: The link to the chart editor tool
+                  image_url:
+                    type: string
+                    description: The chart image url
         '400':
           description: Bad request.
           content:

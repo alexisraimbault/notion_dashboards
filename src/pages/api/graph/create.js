@@ -48,17 +48,20 @@ const handler = async (req, res) => {
 
     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
-    // let { data, error, status } = await supabase
     let { data: supabaseResponse, error } = await supabase
       .from('GPT_GRAPHS')
       .insert({ data: items, settings})
       .select()
 
-      const gptGraphId = supabaseResponse[0]?.id
+    const gptGraphId = supabaseResponse[0]?.id
+
+    const screenshotAPIRes = await fetch(`https://europe-west2-wize-tables.cloudfunctions.net/screenshot_function?graph_id=${gptGraphId}`)
+    const screenshotAPIResponse = await screenshotAPIRes.json()
 
     res.status(200).json({ 
         preview_url: `${process.env.NEXT_PUBLIC_BASE_URL}/view/${gptGraphId}`,
-        edit_url: `${process.env.NEXT_PUBLIC_BASE_URL}/edit/${gptGraphId}`
+        edit_url: `${process.env.NEXT_PUBLIC_BASE_URL}/edit/${gptGraphId}`,
+        image_url: screenshotAPIResponse?.screenshotUrl
     })
 }
 

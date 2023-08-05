@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 import { useRouter } from 'next/router'
 import React, {useState, useEffect} from 'react'
 import { LineChart, Line, Tooltip, XAxis, YAxis, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, Legend } from 'recharts';
+import Image from 'next/image'
 
 import GraphRenderer from '@/components/GraphRender';
 
