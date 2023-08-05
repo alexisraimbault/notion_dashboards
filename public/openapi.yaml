@@ -19,7 +19,7 @@ paths:
               properties:
                 data:
                   type: string
-                  description: The data to be displayed in the graph. The format should be a stringified csv, with as a separator a character that is not present in any of the contents of the data. The first row has to be column titles. 
+                  description: The data to be displayed in the graph. The format should be a stringified csv, using the character ; as separator. The first row has to be column titles. 
                 separator:
                   type: string
                   description: The csv separator used in the data field.
