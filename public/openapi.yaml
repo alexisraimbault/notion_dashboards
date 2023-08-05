@@ -50,7 +50,7 @@ paths:
                         - pie
       responses:
         '200':
-          description: Successfully rendered the HTML, CSS, and JavaScript as a markdown image link.
+          description: Successfully created the chart.
           content:
             application/json:
               schema:
