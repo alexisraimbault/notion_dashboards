@@ -12,7 +12,7 @@ const handler = async (req, res) => {
 
     const data = req.body?.data
     const settings = req.body?.settings
-    const separator = req.body?.separator
+    const separator = req.body?.separator || ";"
 
     const rows = data.split('\n')
     
