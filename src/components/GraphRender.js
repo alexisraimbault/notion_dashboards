@@ -55,7 +55,7 @@ const GraphRenderer = ({graphData, graphSettings}) => {
             }
         })
 
-        Object.keys(dataObject)?.sort()?.forEach(XItemData => {
+        Object.keys(dataObject)?.forEach(XItemData => {
             const YItemData = aggregationType === 'avg' ? dataObject[XItemData].reduce((partialSum, a) => partialSum + a, 0)/dataObject[XItemData].length : dataObject[XItemData]
             res.push({
                 XItemData,
