@@ -41,9 +41,25 @@ const GraphRenderer = ({graphData, graphSettings}) => {
         return initAggregValueByIdMap[aggregationType]
     }
 
+    const compareFunctionGeneric = (property, orderByDirection) => (a, b) => {
+        let valueToCompareA = a[property]
+        let valueToCompareB = b[property]
+
+        if(orderByDirection === 'desc') {
+            return valueToCompareA === valueToCompareB ? 0 : 
+            valueToCompareA > valueToCompareB ? -1 : 1
+        }
+
+        return valueToCompareA === valueToCompareB ? 0 : 
+            valueToCompareA > valueToCompareB ? 1 : -1
+      
+        return 0
+    }
+
     const formatGraphData = () => {
         const res = []
         const dataObject = {}
+
         graphData?.forEach(itemDataObject => {
             const XValue = itemDataObject[XProperty]
             const YValue = extractNumericValue(itemDataObject[YProperty])
@@ -62,6 +78,11 @@ const GraphRenderer = ({graphData, graphSettings}) => {
                 YItemData,
             })
         })
+
+        if(graphSettings?.orderBy) {
+            const sortProperty = graphSettings?.orderBy === graphSettings?.XAxis ? 'XItemData' : 'YItemData'
+            res.sort(compareFunctionGeneric(sortProperty, graphSettings?.orderByDirection))
+        }
 
         return res
     }
@@ -190,7 +211,7 @@ const GraphRenderer = ({graphData, graphSettings}) => {
     
         return (
           <div className='graph-view__charts-wrapper'>
-            {/* <div className='graph-view__charts-title'>{dashboardName}</div> */}
+            {graphSettings.name && <div className='graph-view__charts-title'>{graphSettings.name}</div>}
             {renderChartFunctionMap[chartType]()}
           </div>
         )

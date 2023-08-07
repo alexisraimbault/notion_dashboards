@@ -365,6 +365,19 @@ body,
   align-items: center;
 }
 
+.graph-view__logo-container {
+  margin-top: auto;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.graph-view__right-container {
+  flex-grow: 1;
+  height: 100%;
+}
+
 .editor__option-container {
   margin-bottom: 16px;
 }
@@ -390,6 +403,24 @@ body,
 }
 
 .editor__cta:hover {
+  background-color: var(--custom-color-brand-dark);
+}
+
+.graph-view__cta {
+  font-size: 24px;
+  font-weight: bold;
+  color: white !important;
+  cursor: pointer;
+  padding: 12px 24px;
+  border-radius: var(--custom-border-radius);
+  background-color: var(--custom-color-brand);
+  text-align: center;
+  margin-top: auto;
+  transition: var(--custom-color-transition);
+  margin-bottom: 24px;
+}
+
+.graph-view__cta:hover {
   background-color: var(--custom-color-brand-dark);
 }
 
@@ -750,6 +781,12 @@ body,
   margin-bottom: 30px;
 }
 
+.graph-view__charts-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
 .graph-view__wrapper {
   display: flex;
   align-items: center;
@@ -761,7 +798,7 @@ body,
 .graph-view__charts-wrapper {
   height: 100%;
   width: 100%;
-  padding: 100px 200px;
+  padding: 100px 100px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -782,11 +819,16 @@ body,
 
 .graph-view__editor-container {
   height: 100%;
-  padding: 40px 20px;
+  padding: 0px 20px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  /* align-items: center; */
   background-color: var(--custom-color-brand-light);
-  text-align: center;
-  width: 20%;
+  /* text-align: center; */
+  width: 25%;
+}
+
+.graph-view__cta > .p-progress-spinner {
+  width: 20px !important;
+  height: 20px !important;
 }
