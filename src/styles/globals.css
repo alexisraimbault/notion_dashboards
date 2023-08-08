@@ -825,10 +825,206 @@ body,
   /* align-items: center; */
   background-color: var(--custom-color-brand-light);
   /* text-align: center; */
-  width: 25%;
+  width: 23%;
 }
 
 .graph-view__cta > .p-progress-spinner {
   width: 20px !important;
   height: 20px !important;
+}
+
+.plugin-landing__topbar {
+  padding: 20px 5%;
+  display: flex;
+  align-items: center;
+  background-color: var(--custom-bg-color);
+}
+.plugin-landing__bottombar {
+  width: 100%;
+  padding: 40px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--custom-color-brand-light);
+  border-radius: 25px 25px 0 0;
+}
+
+.plugin-landing__bottombar-rights {
+  font-size: 0.9rem;
+  color: var(--custom-color-secondary) !important;
+}
+
+.plugin-landing__app-name {
+  font-size: 28px;
+  font-weight: bold;
+  margin-left: 20px;
+}
+
+.plugin-landing__app-secondary {
+  font-size: 28px;
+  font-weight: bold;
+  margin-left: auto;
+
+}
+
+.plugin-landing__container {
+  width: 100%;
+}
+
+.plugin-landing__content-container {
+  padding: 20px 5%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.plugin-landing__title {
+  font-size: 70px;
+  font-weight: bold;
+  margin-top: 100px;
+  text-align: center;
+  padding: 0 10%;
+}
+
+.plugin-landing__subtitle {
+  padding: 0 20%;
+  font-size: 30px;
+  font-weight: semibold;
+  margin-top: 40px;
+  text-align: center;
+  color: var(--custom-color-secondary) !important;
+}
+
+.plugin-landing__section-title {
+  padding: 0 20%;
+  font-size: 3rem;
+  font-weight: semibold;
+  margin-bottom: 60px;
+  text-align: center;
+  color: var(--custom-color) !important;
+}
+
+.plugin-landing__card {
+  margin: 100px 0;
+  /* width: 100%; */
+  padding: 60px 100px;
+  background-color: var(--custom-color-brand);
+  border-radius: 10px;
+}
+
+.plugin-landing__flow {
+  display: flex;
+  align-items: center;
+}
+
+.plugin-landing__arrows {
+  margin: 0 20px 29px 20px;
+  color: var(--custom-bg-color) !important;
+}
+
+.plugin-landing__flow-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px 18px 18px 0;
+  border: 2px solid var(--custom-color-secondary);
+  overflow: hidden;
+}
+
+.plugin-landing__flow-name {
+  margin-top: 20px;
+  font-size: 25px;
+  font-weight: semibold;
+  color: var(--custom-color-brand-light) !important;
+}
+
+.plugin-landing__flow-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 200px;
+}
+
+.plugin-landing__install-inner {
+  display: flex;
+  padding: 20px 5%;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.plugin-landing__git-container {
+  border-radius: 60px;
+  overflow: hidden;
+}
+
+.plugin-landing__install-section {
+  border-radius: 25px;
+  background-color: var(--custom-color-brand-light);
+  padding: 60px;
+  margin-bottom: 100px;
+}
+
+.plugin-landing__install-instructions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-grow: 1;
+  padding: 40px 20px 0 20px;
+}
+
+.plugin-landing__section-subtitle {
+  font-size: 2rem;
+  font-weight: 400;
+  margin-bottom: 20px;
+}
+
+.plugin-landing__section-item {
+  font-size: 1.5rem;
+  font-weight: 400;
+  margin-bottom: 20px;
+  color: var(--custom-color-secondary) !important;
+  /* font-size: 1.2rem;
+  margin-bottom: 12px; */
+}
+
+.plugin-landing__use-section {
+  padding: 0 60px 0 60px;
+  /* margin-bottom: 100px; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.plugin-landing__gpt-profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--custom-green);
+  width: 40px;
+  height: 40px;
+  border-radius: var(--custom-border-radius);
+  font-size: 1.2rem;
+  margin-right: 12px;
+}
+
+.plugin-landing__gpt-question {
+  font-size: 1.2rem;
+  color: var(--custom-color-secondary) !important;
+}
+
+.plugin-landing__gpt-preview {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+  margin-top: 12px;
+  padding: 20px;
+  border: 1px solid var(--custom-color-secondary);
+  border-radius: 24px;
+}
+
+.plugin-landing__bottom-img {
+  margin-top: 12px;
+  margin-bottom: 40px;
 }
