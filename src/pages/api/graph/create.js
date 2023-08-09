@@ -12,7 +12,7 @@ const handler = async (req, res) => {
 
     const data = req.body?.data
     const settings = req.body?.settings
-    const separator = req.body?.separator || ";"
+    let separator = req.body?.separator || ";"
 
     const rows = data.split('\n')
     
@@ -29,6 +29,14 @@ const handler = async (req, res) => {
     rows.forEach(row => {
         cptRowItem = 0
         let currentItem = {}
+        if(cptRow === 0) {
+            if(separator === ";" && row.split(separator).length <= 1 &&  row.split(",").length > 1 ) {
+                separator = ","
+            }
+            if(separator === "," && row.split(separator).length <= 1 &&  row.split(";").length > 1 ) {
+                separator = ";"
+            }
+        }
 
         row.split(separator).forEach(rowItem => {
             if(cptRow === 0) {

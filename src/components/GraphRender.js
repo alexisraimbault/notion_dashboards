@@ -7,7 +7,10 @@ const GraphRenderer = ({graphData, graphSettings}) => {
     const XProperty = graphSettings?.XAxis
     const YProperty = graphSettings?.YAxis
     const aggregationType = graphSettings?.aggregation || 'sum'
-    const chartType = graphSettings?.type
+    const chartTypeRaw = graphSettings?.type || 'line'
+
+    const availableTypes = ['line', 'bar', 'pie']
+    const chartType = availableTypes.includes(chartTypeRaw) ? chartTypeRaw : 'line'
 
     const extractNumericValue = value => {
         const isNumeric = toTest => {
