@@ -13,11 +13,22 @@ const GraphRenderer = ({graphData, graphSettings}) => {
     const chartType = availableTypes.includes(chartTypeRaw) ? chartTypeRaw : 'line'
 
     const extractNumericValue = value => {
+
         const isNumeric = toTest => {
             return !isNaN(toTest)
         }
 
-        return isNumeric(value) ? +value : value
+        if(isNumeric(value)) {
+            return +value
+        }
+
+        const tmpValue = value?.split('')?.join('');
+
+        if(/\d/.test(tmpValue)) {
+            return tmpValue.replace(/[^0-9]/g, "")
+        }
+
+        return value
     }
 
     const getNewAggegValue = (currentValue, newItem) => {
