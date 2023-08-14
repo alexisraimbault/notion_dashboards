@@ -34,7 +34,6 @@ const GraphRenderer = ({graphData, graphSettings}) => {
         const numericPropertiesAll = Object.keys(numericProperties)
 
         if(numericPropertiesAll.includes(defaultProperty)) {
-            console.log('TEST 1', {defaultProperty})
             return {
                 property: defaultProperty,
                 isNumeric: true
@@ -51,14 +50,11 @@ const GraphRenderer = ({graphData, graphSettings}) => {
         })
         
         if (res !== null) {
-            console.log('TEST 2')
             return {
                 property: res,
                 isNumeric: true
             }
         }
-
-        console.log('TEST 3')
 
         return {
             property: defaultProperty,
@@ -136,8 +132,7 @@ const GraphRenderer = ({graphData, graphSettings}) => {
         graphData?.forEach(itemDataObject => {
             const XValue = itemDataObject[XProperty]
             const YValue = extractNumericValue(itemDataObject[YProperty])
-            
-            console.log('TEST ', {itemDataObject, YValue, YProperty})
+
             if(!Object.keys(dataObject).includes(XValue)) {
                 dataObject[XValue] = getInitAggegValue(YValue)
             } else {
