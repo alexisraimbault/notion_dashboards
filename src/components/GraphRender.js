@@ -4,20 +4,79 @@ import React, {useState, useEffect} from 'react'
 import { LineChart, Line, Tooltip, XAxis, YAxis, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, Legend } from 'recharts';
 
 const GraphRenderer = ({graphData, graphSettings}) => {
+
+    const isNumeric = toTest => {
+        return !isNaN(toTest)
+    }
+
+    const getYAxis = () => {
+        const XProperty = graphSettings?.XAxis
+        const defaultProperty = graphSettings?.YAxis
+        const numericProperties = {}
+        graphData.forEach(item => {
+            Object.keys(item).forEach(property => {
+                if(property !== XProperty) {
+                    const propertyValue = item[property]
+                    const isNumericProperty = isNumeric(propertyValue)
+                    const tmpValue = propertyValue?.split('')?.join('');
+                    const isSubNumericProperty = /\d/.test(tmpValue)
+
+                    if(isNumericProperty || isSubNumericProperty) {
+                        if(!Object.keys(numericProperties).includes(property)) {
+                            numericProperties[property] = 0
+                        }
+                        numericProperties[property] += isNumericProperty ? 2 : 1
+                    }
+                }
+            } )
+        })
+
+        const numericPropertiesAll = Object.keys(numericProperties)
+
+        if(numericPropertiesAll.includes(defaultProperty)) {
+            console.log('TEST 1', {defaultProperty})
+            return {
+                property: defaultProperty,
+                isNumeric: true
+            }
+        }
+
+        let res = null
+        let resScore = null
+        numericPropertiesAll.forEach(numericProperty => {
+            if(resScore === null || numericProperties[numericProperty] > resScore) {
+                resScore = numericProperties[numericProperty]
+                res = numericProperty
+            }
+        })
+        
+        if (res !== null) {
+            console.log('TEST 2')
+            return {
+                property: res,
+                isNumeric: true
+            }
+        }
+
+        console.log('TEST 3')
+
+        return {
+            property: defaultProperty,
+            isNumeric: false
+        }
+    }
+
     const XProperty = graphSettings?.XAxis
-    const YProperty = graphSettings?.YAxis
-    const aggregationType = graphSettings?.aggregation || 'sum'
+    const YaxisData = getYAxis()
+    const YProperty = YaxisData?.property
+    const isYPropertyNumeric = YaxisData?.isNumeric
+    const aggregationType = !isYPropertyNumeric ? 'count' : graphSettings?.aggregation || 'sum'
     const chartTypeRaw = graphSettings?.type || 'line'
 
     const availableTypes = ['line', 'bar', 'pie']
     const chartType = availableTypes.includes(chartTypeRaw) ? chartTypeRaw : 'line'
 
     const extractNumericValue = value => {
-
-        const isNumeric = toTest => {
-            return !isNaN(toTest)
-        }
-
         if(isNumeric(value)) {
             return +value
         }
@@ -78,6 +137,7 @@ const GraphRenderer = ({graphData, graphSettings}) => {
             const XValue = itemDataObject[XProperty]
             const YValue = extractNumericValue(itemDataObject[YProperty])
             
+            console.log('TEST ', {itemDataObject, YValue, YProperty})
             if(!Object.keys(dataObject).includes(XValue)) {
                 dataObject[XValue] = getInitAggegValue(YValue)
             } else {
