@@ -17,15 +17,18 @@ const GraphRenderer = ({graphData, graphSettings}) => {
             Object.keys(item).forEach(property => {
                 if(property !== XProperty) {
                     const propertyValue = item[property]
-                    const isNumericProperty = isNumeric(propertyValue)
-                    const tmpValue = propertyValue?.split('')?.join('');
-                    const isSubNumericProperty = /\d/.test(tmpValue)
 
-                    if(isNumericProperty || isSubNumericProperty) {
-                        if(!Object.keys(numericProperties).includes(property)) {
-                            numericProperties[property] = 0
+                    if(propertyValue.length > 0 ) {
+                        const isNumericProperty = isNumeric(propertyValue)
+                        const tmpValue = propertyValue?.split('')?.join('');
+                        const isSubNumericProperty = /\d/.test(tmpValue)
+            
+                        if(isNumericProperty || isSubNumericProperty) {
+                            if(!Object.keys(numericProperties).includes(property)) {
+                                numericProperties[property] = 0
+                            }
+                            numericProperties[property] += isNumericProperty ? 2 : 1
                         }
-                        numericProperties[property] += isNumericProperty ? 2 : 1
                     }
                 }
             } )
