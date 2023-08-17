@@ -27,7 +27,7 @@ const GraphRenderer = ({graphData, graphSettings}) => {
     // blue to yellow
     const palette7 = ["#115f9a", "#1984c5", "#22a7f0", "#48b5c4", "#76c68f", "#a6d75b", "#c9e52f", "#d0ee11", "#d0f400"]
 
-    const palettes = [palette1, palette2, palette3, palette4, palette5, palette6, palette7]
+    const palettes = [palette3, palette2, palette1, palette4, palette5, palette6, palette7]
 
     const isNumeric = toTest => {
         return !isNaN(toTest)
@@ -96,11 +96,11 @@ const GraphRenderer = ({graphData, graphSettings}) => {
     const aggregationType = !isYPropertyNumeric ? 'count' : graphSettings?.aggregation || 'sum'
     const chartTypeRaw = graphSettings?.type || 'line'
 
-    let paletteIndex = parseInt(graphSettings?.palette || 3)
+    let paletteIndex = parseInt(graphSettings?.palette || 1)
     const availablePalettes = [...Array(palettes.length).keys()]
 
     if(!availablePalettes.includes(paletteIndex - 1)) {
-        paletteIndex = 3
+        paletteIndex = 1
     }
 
     const paletteToUse = palettes[paletteIndex - 1]

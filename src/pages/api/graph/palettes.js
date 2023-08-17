@@ -27,9 +27,9 @@ const handler = async (req, res) => {
     const palettes = [
         {
             number: 1,
-            name: 'Divergent',
-            colors: palette1,
-            url: 'https://wizetables.com/divergent.png'
+            name: 'Purple Classic',
+            colors: palette3,
+            url: 'https://wizetables.com/classic.png'
         },
         {
             number: 2,
@@ -39,9 +39,9 @@ const handler = async (req, res) => {
         },
         {
             number: 3,
-            name: 'Purple Classic',
-            colors: palette3,
-            url: 'https://wizetables.com/classic.png'
+            name: 'Divergent',
+            colors: palette1,
+            url: 'https://wizetables.com/divergent.png'
         },
         {
             number: 4,
