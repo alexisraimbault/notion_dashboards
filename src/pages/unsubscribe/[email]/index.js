@@ -1,17 +1,28 @@
-import { createClient } from '@supabase/supabase-js'
 import { useRouter } from 'next/router'
-import React, {useState, useEffect} from 'react'
-import { Dropdown } from 'primereact/dropdown';
-import { InputText } from 'primereact/inputtext';
-
-import GraphRenderer from '@/components/GraphRender';
-import { ProgressSpinner } from 'primereact/progressspinner';
-import Image from 'next/image'
+import React, {useEffect} from 'react'
+import { createClient } from '@supabase/supabase-js'
 
 const Unsubscribe = () => {
     const {query, push} = useRouter()
     const {email} = query
-    console.log({email})
+    
+    const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+
+    useEffect(() => {
+        if(email) {
+            removeEmail(email)
+        }
+    }, [email])
+
+    const removeEmail = async email => {
+        console.log('removing ', email)
+        if(email) {
+            const { data, error } = await supabase
+                .from('removed_emails')
+                .insert({email})
+        }
+
+    }
 
     return (
         <div className='graph-view__wrapper'>

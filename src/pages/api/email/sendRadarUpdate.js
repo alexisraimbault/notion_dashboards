@@ -2,7 +2,7 @@
 
 const handler = async (req, res) => {
     
-    const RESEND_API_KEY = 're_RzaXxG9j_LQgzCBCBa4HZL6nAwdqifNyh';
+    const RESEND_API_KEY = 're_2pgpUdqr_HpkfujN1QaoPrvnuZpf2NmLs';
     const email = '27.raimbault.alexis@gmail.com'
 
     if(!email) {
@@ -173,7 +173,7 @@ table, td { color: #000000; } #u_body a { color: #38389b; text-decoration: under
       <td style="overflow-wrap:break-word;word-break:break-word;padding:10px 40px 25px;font-family:'Raleway',sans-serif;" align="left">
         
   <div style="font-size: 14px; color: #fcfcfc; line-height: 170%; text-align: left; word-wrap: break-word;">
-    <p style="font-size: 14px; line-height: 170%;"><span style="font-size: 18px; line-height: 30.6px;">We're excited to bring you some colorful news! Our team has been working hard to enhance your charting experience, and we are thrilled to announce that we have added two brand new features to our charts application that we think you'll absolutely love:</span></p>
+    <p style="font-size: 14px; line-height: 170%;"><span style="font-size: 18px; line-height: 30.6px;">We're excited to bring you some colorful news! Our team has been working hard to enhance your charting experience, and we are thrilled to announce that we have added two brand new features to our charts application:</span></p>
   </div>
 
       </td>
@@ -492,7 +492,7 @@ table, td { color: #000000; } #u_body a { color: #38389b; text-decoration: under
         body: JSON.stringify({
             from: 'Alexis Raimbault <alexis@wizetables.com>',
             to: [email],
-            subject: 'Your Chat GPT Charts, new features on the WizeTables plugin ! 🌈📊',
+            subject: 'Your Chat GPT Charts, new features on the WizeCharts plugin ! 🌈📊',
             html: emailTemplate,
         }),
     });
