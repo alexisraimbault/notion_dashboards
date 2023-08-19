@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { useRouter } from 'next/router'
 import React, {useState, useEffect} from 'react'
-import { LineChart, Line, Tooltip, XAxis, YAxis, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, Legend } from 'recharts';
+import { LineChart, Line, Tooltip, XAxis, YAxis, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, CartesianGrid, Legend, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
 
 const GraphRenderer = ({graphData, graphSettings}) => {
     // PALETTES
@@ -105,7 +105,7 @@ const GraphRenderer = ({graphData, graphSettings}) => {
 
     const paletteToUse = palettes[paletteIndex - 1]
 
-    const availableTypes = ['line', 'bar', 'pie']
+    const availableTypes = ['line', 'bar', 'pie', 'radar']
     const chartType = availableTypes.includes(chartTypeRaw) ? chartTypeRaw : 'line'
 
     const extractNumericValue = value => {
@@ -260,6 +260,17 @@ const GraphRenderer = ({graphData, graphSettings}) => {
             </PieChart>
         </ResponsiveContainer>
     );
+    
+    const renderRadarChart = () => (
+        <ResponsiveContainer width="100%" height={"100%"}>
+            <RadarChart cx="50%" cy="50%" outerRadius="80%" data={formattedData}>
+                <PolarGrid />
+                <PolarAngleAxis dataKey="XItemData" />
+                <PolarRadiusAxis />
+                <Radar dataKey="YItemData" stroke={paletteToUse[0]} fill={paletteToUse[0]} fillOpacity={0.6} />
+            </RadarChart>
+        </ResponsiveContainer>
+    );
 
     const renderCharts = () => {
         if(formattedData === null || formattedData === undefined || formattedData.length === 0) {
@@ -270,6 +281,7 @@ const GraphRenderer = ({graphData, graphSettings}) => {
           line: renderLineChart,
           bar: renderBarChart,
           pie: renderDoughnutChart,
+          radar: renderRadarChart,
         }
     
         return (
