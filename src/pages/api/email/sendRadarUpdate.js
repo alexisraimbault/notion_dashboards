@@ -1,15 +1,16 @@
 
 
 const handler = async (req, res) => {
+    const emails = req?.body?.emails || []
     
     const RESEND_API_KEY = 're_2pgpUdqr_HpkfujN1QaoPrvnuZpf2NmLs';
-    const email = '27.raimbault.alexis@gmail.com'
 
-    if(!email) {
+    if(!emails) {
         res.status(422).send({error: 'no email specified'});
     }
 
-    const emailTemplate = `
+    const getEmailTemplate = receivingEmail => {
+        return `
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
@@ -451,7 +452,7 @@ table, td { color: #000000; } #u_body a { color: #38389b; text-decoration: under
     }
 </style>
 <div class="centered-div">
-    <a href="https://www.wizetables.com/unsubscribe/${email}" class="centered-link">Unsubscribe</a>
+    <a href="https://www.wizetables.com/unsubscribe/${receivingEmail}" class="centered-link">Unsubscribe</a>
 </div>
   </div>
 
@@ -482,32 +483,36 @@ table, td { color: #000000; } #u_body a { color: #38389b; text-decoration: under
 
 </html>
     `
+}
 
-    const resendRes = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${RESEND_API_KEY}`,
-        },
-        body: JSON.stringify({
-            from: 'Alexis Raimbault <alexis@wizetables.com>',
-            to: [email],
-            subject: 'Your Chat GPT Charts, new features on the WizeCharts plugin ! 🌈📊',
-            html: emailTemplate,
-        }),
-    });
 
-    if (resendRes.ok) {
-        const data = await resendRes.json();
 
-        res.status(200).send({data});
-    } else {
-        res.status(422).send({
-            error: "Mail error, check resend dashboard",
+    for(let email of emails) {
+        const template = getEmailTemplate(email)
+        const resendRes = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${RESEND_API_KEY}`,
+            },
+            body: JSON.stringify({
+                from: 'Alexis Raimbault <alexis@wizetables.com>',
+                to: [email],
+                subject: 'Your Chat GPT Charts, new features on the WizeCharts plugin ! 🌈📊',
+                html: template,
+            }),
         });
+
+        if (resendRes.ok) {
+            const data = await resendRes.json();
+
+            console.log({data});
+        } else {
+            console.log({error: "Mail error, check resend dashboard"})
+        }
     }
 
-    // res.status(200).send({ ok: true, message: 'Dev.to account successfully linked !' })
+    res.status(200).send({ ok: true, message: 'emails sent' })
 }
 
 export default handler

@@ -60,6 +60,15 @@ const GraphRenderer = ({graphData, graphSettings}) => {
 
         const numericPropertiesAll = Object.keys(numericProperties)
 
+        for(let otherProperty of numericPropertiesAll) {
+            if(otherProperty.includes(defaultProperty) || defaultProperty.includes(otherProperty)) {
+                return {
+                    property: otherProperty,
+                    isNumeric: true
+                }
+            }
+        }
+
         if(numericPropertiesAll.includes(defaultProperty)) {
             return {
                 property: defaultProperty,
@@ -89,7 +98,31 @@ const GraphRenderer = ({graphData, graphSettings}) => {
         }
     }
 
-    const XProperty = graphSettings?.XAxis
+    const getXAxis = () => {
+        const defaultProperty = graphSettings?.XAxis
+        const properties = []
+        graphData.forEach(item => {
+            Object.keys(item).forEach(property => {
+                if(!properties.includes(property)) {
+                    properties.push(property)
+                }
+            } )
+        })
+
+        if(properties.includes(defaultProperty)) {
+            return defaultProperty
+        }
+
+        for(let otherProperty of properties) {
+            if(defaultProperty.includes(otherProperty) || otherProperty.includes(defaultProperty)) {
+                return otherProperty
+            }
+        }
+
+        return defaultProperty
+    }
+
+    const XProperty = getXAxis()
     const YaxisData = getYAxis()
     const YProperty = YaxisData?.property
     const isYPropertyNumeric = YaxisData?.isNumeric
