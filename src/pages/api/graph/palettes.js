@@ -69,6 +69,7 @@ const handler = async (req, res) => {
         },
     ]
 
+    res.setHeader('X-PluginLab-Ignore-Quota', true)
     res.status(200).json({ 
         palettes,
     })
